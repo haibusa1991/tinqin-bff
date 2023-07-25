@@ -1,0 +1,3 @@
+com\tinqin\bff\rest\TinqinBffApplication.class
+com\tinqin\bff\rest\controller\itemController.class
+com\tinqin\bff\rest\controller\SwaggerController.class

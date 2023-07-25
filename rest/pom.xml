@@ -12,12 +12,6 @@
     <name>rest</name>
     <description>rest</description>
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>com.tinqin.bff</groupId>-->
-<!--            <artifactId>api</artifactId>-->
-<!--            <version>${revision}</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>core</artifactId>
