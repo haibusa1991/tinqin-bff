@@ -1,8 +1,0 @@
-com\tinqin\bff\api\operation\item\GetItemByIdOperation.class
-com\tinqin\bff\api\base\ProcessorResult.class
-com\tinqin\bff\api\operation\item\GetItemByIdInput$GetItemByIdInputBuilder.class
-com\tinqin\bff\api\base\Processor.class
-com\tinqin\bff\api\operation\item\GetItemByIdInput.class
-com\tinqin\bff\api\operation\item\GetItemByIdResult.class
-com\tinqin\bff\api\base\ProcessorInput.class
-com\tinqin\bff\api\operation\item\GetItemByIdResult$GetItemByIdResultBuilder.class
