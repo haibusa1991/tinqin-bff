@@ -1,4 +1,4 @@
-package com.tinqin.bff.api.operation.item;
+package com.tinqin.bff.api.operation.item.getItemByTagId;
 
 import com.tinqin.bff.api.base.ProcessorResult;
 import lombok.AccessLevel;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Setter(AccessLevel.PRIVATE)
 @Getter
 @Builder
-public class GetItemByIdResult implements ProcessorResult {
+public class GetItemByTagIdSingleItem implements ProcessorResult {
     private UUID storeItemId;
     private String storeItemTitle;
     private String storeItemDescription;

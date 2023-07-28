@@ -1,4 +1,4 @@
-package com.tinqin.bff.api.operation.item;
+package com.tinqin.bff.api.operation.item.getItemById;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
