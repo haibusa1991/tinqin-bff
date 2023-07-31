@@ -1,0 +1,27 @@
+spring:
+
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    #    url: ${MYSQL_CONNECTION_STRING}
+    url: jdbc:mysql://localhost:3306/tinqin-bff?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: toor
+  sql:
+    init:
+      mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  logging:
+    level:
+      org.springframework.security=DEBUG
+server:
+  port: 8082
+

@@ -57,8 +57,19 @@
             <artifactId>feign-jackson</artifactId>
             <version>12.4</version>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.1.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+    </dependencies>
     <modules>
         <module>api</module>
         <module>core</module>
