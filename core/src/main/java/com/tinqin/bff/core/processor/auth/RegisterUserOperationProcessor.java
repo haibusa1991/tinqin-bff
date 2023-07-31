@@ -1,8 +1,8 @@
 package com.tinqin.bff.core.processor.auth;
 
-import com.tinqin.bff.api.operation.auth.RegisterUserInput;
-import com.tinqin.bff.api.operation.auth.RegisterUserOperation;
-import com.tinqin.bff.api.operation.auth.RegisterUserResult;
+import com.tinqin.bff.api.operation.auth.registerUser.RegisterUserInput;
+import com.tinqin.bff.api.operation.auth.registerUser.RegisterUserOperation;
+import com.tinqin.bff.api.operation.auth.registerUser.RegisterUserResult;
 import com.tinqin.bff.persistence.repository.UserRepository;
 import com.tinqin.bff.persistence.entity.User;
 import lombok.RequiredArgsConstructor;

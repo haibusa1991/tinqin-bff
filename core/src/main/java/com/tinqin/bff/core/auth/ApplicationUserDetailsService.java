@@ -2,17 +2,16 @@ package com.tinqin.bff.core.auth;
 
 import com.tinqin.bff.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class ApplicationUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;

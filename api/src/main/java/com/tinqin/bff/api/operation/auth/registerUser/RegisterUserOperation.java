@@ -1,4 +1,4 @@
-package com.tinqin.bff.api.operation.auth;
+package com.tinqin.bff.api.operation.auth.registerUser;
 
 import com.tinqin.bff.api.base.Processor;
 

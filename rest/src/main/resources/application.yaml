@@ -1,5 +1,4 @@
 spring:
-
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     #    url: ${MYSQL_CONNECTION_STRING}
@@ -24,4 +23,6 @@ spring:
       org.springframework.security=DEBUG
 server:
   port: 8082
+jwt-secret: SkzL9DNlghANAvjcxxKtSiwENSPYwbbI
+
 

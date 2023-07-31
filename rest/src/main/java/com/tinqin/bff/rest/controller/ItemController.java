@@ -4,6 +4,10 @@ import com.tinqin.bff.api.operation.item.getItemByTagId.GetItemByTagIdInput;
 import com.tinqin.bff.api.operation.item.getItemByTagId.GetItemByTagIdOperation;
 import com.tinqin.bff.api.operation.item.getItemByTagId.GetItemByTagIdResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @RequestMapping(path = "/items")
-public class itemController {
+public class ItemController {
     private final GetItemByTagIdOperation getItemByTagId;
 //    private final GetItemByIdOperation getItemById;
 
@@ -24,6 +28,7 @@ public class itemController {
 //    }
 
     @Operation(summary = "DB is corrupted, only 4714a487-ea4c-42d3-a5df-af4e11bc7bca works")
+//    @Parameter(in = ParameterIn.HEADER, required = true,description = "Authorization")
     @GetMapping
     public ResponseEntity<GetItemByTagIdResult> getAllItems(
             @RequestParam(required = false, defaultValue = "false") Boolean includeArchived,
