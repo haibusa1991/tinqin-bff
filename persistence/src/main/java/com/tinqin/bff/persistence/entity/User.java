@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,18 +22,21 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Email
+    @Column(unique = true)
     private String email;
 
-    @NotEmpty
+    @Column(nullable = false)
     private String password;
 
-    @NotEmpty
+    @Column(nullable = false)
     private String firstName;
 
-    @NotEmpty
+    @Column(nullable = false)
     private String lastName;
 
-    @NotEmpty
+    @Column(nullable = false)
     private String phoneNumber;
+
+    @OneToMany
+    private List<CartItem> cartItems;
 }
