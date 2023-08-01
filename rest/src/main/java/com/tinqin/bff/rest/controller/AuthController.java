@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,7 @@ public class AuthController {
 
     @GetMapping//TODO
 //    @Parameter(name = "Authorization",in = ParameterIn.HEADER,schema  = @Schema(name = "Schema", description = "Schema", example = "Subscription example"))
+    @SecurityRequirement(name = "Bearer Authentication")
     public String test(){
         return "Hello auth user.";
     }
