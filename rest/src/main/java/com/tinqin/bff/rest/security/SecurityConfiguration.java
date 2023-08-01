@@ -28,8 +28,9 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(c -> c
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/items","/auth").authenticated()
-                        .requestMatchers(HttpMethod.GET,"/v2/api-docs",
+                        .requestMatchers(HttpMethod.GET, "/items", "/auth").authenticated()
+                        .requestMatchers("/cart", "/cart/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-resources",

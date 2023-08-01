@@ -27,12 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-//@SecurityScheme(
-//        name = "Authorization",
-//        type = SecuritySchemeType.HTTP,
-//        bearerFormat = "JWT",
-//        scheme = "Bearer"
-//)
+
 public class AuthController {
     private final RegisterUserOperation registerUser;
     private final LoginUserOperation loginUser;

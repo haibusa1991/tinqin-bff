@@ -1,8 +1,6 @@
 package com.tinqin.bff.rest.controller;
 
-import com.tinqin.bff.core.exception.ServiceUnavailableException;
-import com.tinqin.bff.core.exception.StorageItemNotFoundException;
-import com.tinqin.bff.core.exception.StoreItemNotFoundException;
+import com.tinqin.bff.core.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +35,6 @@ public class ItemControllerAdvise {
     }
 
 
-
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseBody
     public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
@@ -45,7 +42,7 @@ public class ItemControllerAdvise {
                 .stream()
                 .map(d -> d.getInvalidValue().toString())
                 .collect(Collectors.joining(System.lineSeparator()));
-        return new ResponseEntity<>(String.format("UUID '%s' is not valid.",referencedUuid), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(String.format("UUID '%s' is not valid.", referencedUuid), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ServiceUnavailableException.class)
@@ -54,7 +51,11 @@ public class ItemControllerAdvise {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-    @ExceptionHandler({StorageItemNotFoundException.class, StoreItemNotFoundException.class})
+    @ExceptionHandler({
+            StorageItemNotFoundException.class,
+            StoreItemNotFoundException.class,
+            InsufficientItemQuantityException.class,
+            CartItemNotFoundException.class})
     @ResponseBody
     public ResponseEntity<String> handleServiceUnavailableException(RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

@@ -1,12 +1,10 @@
 package com.tinqin.bff.persistence.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -37,6 +35,23 @@ public class User {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @OneToMany
-    private List<CartItem> cartItems;
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<CartItem> cartItems;
+
+    public boolean addCartItem(CartItem cartItem){
+        return this.cartItems.add(cartItem);
+    }
+
+    public boolean removeCartItem(UUID cartItemId){
+        Optional<CartItem> item = this.cartItems.stream().filter(e -> e.getReferencedItemId().equals(cartItemId)).findFirst();
+        if(item.isEmpty()){
+            return false;
+        }
+
+        return this.cartItems.remove(item.get());
+    }
+
+    public boolean removeCartItem(CartItem cartItem){
+        return this.cartItems.remove(cartItem);
+    }
 }
