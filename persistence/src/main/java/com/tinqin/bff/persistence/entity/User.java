@@ -32,7 +32,6 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
     private String phoneNumber;
 
     @OneToMany(fetch = FetchType.EAGER)

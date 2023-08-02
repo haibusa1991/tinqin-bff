@@ -55,9 +55,17 @@ public class ItemControllerAdvise {
             StorageItemNotFoundException.class,
             StoreItemNotFoundException.class,
             InsufficientItemQuantityException.class,
-            CartItemNotFoundException.class})
+            CartItemNotFoundException.class,
+            UserNotFoundException.class})
     @ResponseBody
-    public ResponseEntity<String> handleServiceUnavailableException(RuntimeException e) {
+    public ResponseEntity<String> handleNotFoundException(RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({
+            CurrentPasswordInvalidException.class})
+    @ResponseBody
+    public ResponseEntity<String> handleCurrentPasswordInvalidException(RuntimeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }

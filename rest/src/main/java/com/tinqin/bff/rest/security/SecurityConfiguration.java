@@ -29,6 +29,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(c -> c
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/items", "/auth").authenticated()
+                        .requestMatchers(HttpMethod.PATCH,  "/auth").authenticated()
                         .requestMatchers("/cart", "/cart/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/v2/api-docs",
                                 "/v3/api-docs",

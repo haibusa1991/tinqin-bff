@@ -1,5 +1,8 @@
 package com.tinqin.bff.rest.controller;
 
+import com.tinqin.bff.api.operation.auth.changePassword.ChangeUserPasswordInput;
+import com.tinqin.bff.api.operation.auth.changePassword.ChangeUserPasswordOperation;
+import com.tinqin.bff.api.operation.auth.changePassword.ChangeUserPasswordResult;
 import com.tinqin.bff.api.operation.auth.loginUser.LoginUserInput;
 import com.tinqin.bff.api.operation.auth.loginUser.LoginUserOperation;
 import com.tinqin.bff.api.operation.auth.loginUser.LoginUserResult;
@@ -31,8 +34,9 @@ import java.util.Map;
 public class AuthController {
     private final RegisterUserOperation registerUser;
     private final LoginUserOperation loginUser;
+    private final ChangeUserPasswordOperation changePassword;
 
-    @GetMapping(path = "/register")
+    @PostMapping(path = "/register")
     public ResponseEntity<RegisterUserResult> registerUser(@RequestBody @Valid RegisterUserInput input) {
         return new ResponseEntity<>(this.registerUser.process(input), HttpStatus.CREATED);
     }
@@ -45,10 +49,9 @@ public class AuthController {
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
-    @GetMapping//TODO
-//    @Parameter(name = "Authorization",in = ParameterIn.HEADER,schema  = @Schema(name = "Schema", description = "Schema", example = "Subscription example"))
+    @PatchMapping
     @SecurityRequirement(name = "Bearer Authentication")
-    public String test(){
-        return "Hello auth user.";
+    public ResponseEntity<ChangeUserPasswordResult> changePassword(@RequestBody @Valid ChangeUserPasswordInput input) {
+        return new ResponseEntity<>(this.changePassword.process(input), HttpStatus.NO_CONTENT);
     }
 }
