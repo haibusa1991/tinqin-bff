@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -64,36 +65,44 @@ public class AddCartItemOperationProcessor implements AddCartItemOperation {
                 .orElseThrow(() -> new StoreItemNotFoundException(referencedItem));
 
 
-        int quantityDifference = storageItem.getQuantity() - input.getQuantity();
-        if (quantityDifference < 0) {
-            throw new InsufficientItemQuantityException(referencedItem, input.getQuantity(), storageItem.getQuantity());
-        }
-
-        CartItem cartItem = this.cartItemRepository.save(
-                CartItem.builder()
-                        .referencedItemId(referencedItem)
-                        .quantity(input.getQuantity())
-                        .price(BigDecimal.valueOf(storageItem.getPrice()))
-                        .build()
-        );
+//        int quantityDifference = storageItem.getQuantity() - input.getQuantity();
+//        if (quantityDifference < 0) {
+//            throw new InsufficientItemQuantityException(referencedItem, input.getQuantity(), storageItem.getQuantity());
+//        }
 
         String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not valid"));
 
-        user.addCartItem(cartItem);
-        User persisted = this.userRepository.save(user);
+        Optional<CartItem> existingCartItemOptional = this.cartItemRepository
+                .findCartItemByReferencedItemId(UUID.fromString(input.getReferencedItemId()));
+
+        CartItem cartItem  = CartItem.builder()
+                    .referencedItemId(referencedItem)
+                    .quantity(input.getQuantity())
+                    .price(BigDecimal.valueOf(storageItem.getPrice()))
+                    .user(user)
+                    .build();
+
+        if (existingCartItemOptional.isPresent()) {
+            cartItem = existingCartItemOptional.get();
+            cartItem.setQuantity(cartItem.getQuantity() + input.getQuantity());
+        }
+
+        CartItem persistedCartItem = this.cartItemRepository.save(cartItem);
+
+        user.addCartItem(persistedCartItem);
+        User persistedUser = this.userRepository.save(user);
 
         return new AddCartItemResult(
-                persisted.getCartItems()
+                persistedUser.getCartItems()
                         .stream()
                         .map(this::serializeCartItem)
                         .collect(Collectors.toSet())
         );
     }
 
-    private String serializeCartItem(CartItem cartItem){
-
-       return String.join("|", cartItem.getReferencedItemId().toString(),
+    private String serializeCartItem(CartItem cartItem) {
+        return String.join("|", cartItem.getReferencedItemId().toString(),
                 cartItem.getQuantity().toString(),
                 cartItem.getPrice().toString());
     }

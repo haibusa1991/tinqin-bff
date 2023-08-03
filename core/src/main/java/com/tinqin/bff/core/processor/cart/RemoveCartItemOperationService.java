@@ -25,18 +25,18 @@ public class RemoveCartItemOperationService implements RemoveCartItemOperation {
 
     @Override
     public RemoveCartItemResult process(RemoveCartItemInput input) {
+
+        CartItem cartItem = this.cartItemRepository
+                .findCartItemByReferencedItemId(input.getReferencedItemId())
+                .orElseThrow(() -> new CartItemNotFoundException(input.getReferencedItemId()));
+
+        this.cartItemRepository.delete(cartItem);
+
         String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not valid"));
 
-        boolean isRemoveSuccessful = user.removeCartItem(input.getReferencedItemId());
-        if (!isRemoveSuccessful) {
-            throw new CartItemNotFoundException(input.getReferencedItemId());
-        }
-
-        User persisted = this.userRepository.save(user);
-
         return new RemoveCartItemResult(
-                persisted.getCartItems()
+                user.getCartItems()
                         .stream()
                         .map(this::serializeCartItem)
                         .collect(Collectors.toSet())

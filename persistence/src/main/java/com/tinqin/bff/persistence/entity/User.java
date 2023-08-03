@@ -34,7 +34,7 @@ public class User {
 
     private String phoneNumber;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "user")
     private Set<CartItem> cartItems;
 
     public boolean addCartItem(CartItem cartItem){

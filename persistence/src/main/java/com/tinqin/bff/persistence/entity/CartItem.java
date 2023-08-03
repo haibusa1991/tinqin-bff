@@ -17,10 +17,11 @@ import java.util.UUID;
 public class CartItem {
 
     @Builder
-    public CartItem(UUID referencedItemId, Integer quantity, BigDecimal price) {
+    public CartItem(UUID referencedItemId, Integer quantity, BigDecimal price, User user) {
         this.referencedItemId = referencedItemId;
         this.quantity = quantity;
         this.price = price;
+        this.user = user;
     }
 
     @Id
@@ -32,6 +33,9 @@ public class CartItem {
     private Integer quantity;
 
     private BigDecimal price;
+
+    @ManyToOne
+    private User user;
 
     @Override
     public boolean equals(Object o) {
