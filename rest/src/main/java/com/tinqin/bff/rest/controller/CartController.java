@@ -12,6 +12,10 @@ import com.tinqin.bff.api.operation.cart.getAllCartItems.GetAllCartItemsResult;
 import com.tinqin.bff.api.operation.cart.removeCartItem.RemoveCartItemInput;
 import com.tinqin.bff.api.operation.cart.removeCartItem.RemoveCartItemOperation;
 import com.tinqin.bff.api.operation.cart.removeCartItem.RemoveCartItemResult;
+import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderInput;
+import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderOperation;
+import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResult;
+import com.tinqin.bff.core.processor.order.PlaceOrderOperationProcessor;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,7 @@ public class CartController {
     private final EmptyCartOperation emptyCart;
     private final GetAllCartItemsOperation getAllCartItems;
     private final RemoveCartItemOperation removeCartItem;
+    private final PlaceOrderOperation placeOrder;
 
 
     @SecurityRequirement(name = "Bearer Authentication")
@@ -55,5 +60,11 @@ public class CartController {
     @DeleteMapping(path = "/{referencedItemId}")
     public ResponseEntity<RemoveCartItemResult> removeCartItem(@PathVariable @org.hibernate.validator.constraints.UUID String referencedItemId) {
         return ResponseEntity.ok(this.removeCartItem.process(new RemoveCartItemInput(UUID.fromString(referencedItemId))));
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PostMapping(path = "/place-order")
+    public ResponseEntity<PlaceOrderResult> placeOrder(PlaceOrderInput input) {
+        return ResponseEntity.ok(this.placeOrder.process(input));
     }
 }
