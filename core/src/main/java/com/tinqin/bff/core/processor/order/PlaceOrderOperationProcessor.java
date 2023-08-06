@@ -32,22 +32,25 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not valid"));
 
         Set<CartItem> cart = user.getCartItems();
-        //check if cart is full
+
         if (cart.isEmpty()) {
             throw new NoItemsInCartException();
         }
 
-        //check if quantity is sufficient
-        //export storage quantity
-        //add sale record
-        List<PlaceOrderInputCartItem> items = cart.stream()
+        List<PlaceOrderInputCartItem> cartItems = cart.stream()
                 .map(this::maptToPlaceOrderInputCartItem)
                 .toList();
 
-        //verify export and record
-        com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult placeOrderResult = storageClient.placeOrder(new com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInput(items));
+        com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInput restInput =
+                com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInput
+                        .builder()
+                        .userId(user.getId().toString())
+                        .cartItems(cartItems)
+                        .build();
 
-        //empty cart
+        com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult placeOrderResult =
+                storageClient.placeOrder(restInput);
+
         return null;
     }
 
@@ -56,7 +59,6 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
                 .referencedItemId(cartItem.getReferencedItemId().toString())
                 .price(cartItem.getPrice().doubleValue())
                 .quantity(cartItem.getQuantity())
-                .userId(cartItem.getUser().getId().toString())
                 .build();
     }
 
