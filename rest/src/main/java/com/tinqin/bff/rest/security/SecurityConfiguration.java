@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.AntPathMatcher;
 
 @Configuration
 @RequiredArgsConstructor
@@ -27,20 +28,11 @@ public class SecurityConfiguration {
         return http
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(c -> c
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, TokenWhitelist.POST.values).permitAll()
                         .requestMatchers(HttpMethod.GET, "/items", "/auth").authenticated()
                         .requestMatchers(HttpMethod.PATCH,  "/auth").authenticated()
                         .requestMatchers("/cart", "/cart/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/v2/api-docs",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
-                                "/configuration/ui",
-                                "/configuration/security",
-                                "/swagger-ui/**",
-                                "/webjars/**",
-                                "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.GET, TokenWhitelist.GET.values).permitAll()
                 )
                 .cors(c -> c.disable())
                 .csrf(c -> c.disable())
@@ -57,5 +49,4 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

@@ -41,16 +41,4 @@ public class User {
         return this.cartItems.add(cartItem);
     }
 
-    public boolean removeCartItem(UUID cartItemId){
-        Optional<CartItem> item = this.cartItems.stream().filter(e -> e.getReferencedItemId().equals(cartItemId)).findFirst();
-        if(item.isEmpty()){
-            return false;
-        }
-
-        return this.cartItems.remove(item.get());
-    }
-
-    public boolean removeCartItem(CartItem cartItem){
-        return this.cartItems.remove(cartItem);
-    }
 }

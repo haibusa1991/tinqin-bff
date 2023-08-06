@@ -6,16 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Setter(AccessLevel.PRIVATE)
 @Getter
 @Builder
-public class PlaceOrderResult implements ProcessorResult {
-    private List<PlaceOrderResultItemData> items;
-    private LocalDateTime timestamp;
-    private UUID user;
-    private Double orderPrice;
+public class PlaceOrderResultItemData implements ProcessorResult {
+    private UUID referencedItemId;
+    private Double price;
+    private Integer quantity;
 }

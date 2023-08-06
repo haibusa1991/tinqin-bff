@@ -1,6 +1,7 @@
 package com.tinqin.bff.domain.storageClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tinqin.storage.restexport.StorageItemRestExport;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
@@ -22,8 +23,8 @@ public class RestExportClientFactory {
     @Bean
     public ObjectMapper mapper() {
         ObjectMapper mapper = new ObjectMapper();
-//        mapper.registerModule(new JavaTimeModule());
         mapper.findAndRegisterModules();
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return mapper;
     }
 

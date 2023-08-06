@@ -7,7 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.springframework.http.ResponseEntity;
@@ -20,21 +23,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/items")
 public class ItemController {
     private final GetItemByTagIdOperation getItemByTagId;
-//    private final GetItemByIdOperation getItemById;
 
-//    @GetMapping(path = "/{itemId}")
-//    public ResponseEntity<GetItemByIdResult> getItemById(@PathVariable @org.hibernate.validator.constraints.UUID String itemId) {
-//        return ResponseEntity.ok(this.getItemById.process(GetItemByIdInput.builder().referencedItemId(UUID.fromString(itemId)).build()));
-//    }
 
-    @Operation(summary = "DB is corrupted, only 4714a487-ea4c-42d3-a5df-af4e11bc7bca works")
-//    @Parameter(in = ParameterIn.HEADER, required = true,description = "Authorization")
+
+    @Operation(description = "Gets all items having the specified tag and paginates them according the parameters specified.",
+            summary = "Gets item by tag id.")
+    @ApiResponse(responseCode = "200", description = "Items found.")
+    @ApiResponse(responseCode = "400", description = "Tag id is invalid, itemsPerPage or page is less than 1")
+    @ApiResponse(responseCode = "403", description = "JWT is invalid.")
+
     @GetMapping
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<GetItemByTagIdResult> getAllItems(
             @RequestParam(required = false, defaultValue = "false") Boolean includeArchived,
             @RequestParam @UUID String tagId,
-            @RequestParam(defaultValue = "2") Integer itemsPerPage,
-            @RequestParam(defaultValue = "1") Integer page
+            @RequestParam(defaultValue = "2") @Positive Integer itemsPerPage,
+            @RequestParam(defaultValue = "1") @Positive Integer page
     ) {
 
         GetItemByTagIdInput input = GetItemByTagIdInput.builder()

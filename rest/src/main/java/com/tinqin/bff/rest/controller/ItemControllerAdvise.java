@@ -1,6 +1,7 @@
 package com.tinqin.bff.rest.controller;
 
 import com.tinqin.bff.core.exception.*;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +39,11 @@ public class ItemControllerAdvise {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseBody
     public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
-        String referencedUuid = e.getConstraintViolations()
+        String result = e.getConstraintViolations()
                 .stream()
-                .map(d -> d.getInvalidValue().toString())
+                .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(System.lineSeparator()));
-        return new ResponseEntity<>(String.format("UUID '%s' is not valid.", referencedUuid), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ServiceUnavailableException.class)
@@ -56,7 +57,8 @@ public class ItemControllerAdvise {
             StoreItemNotFoundException.class,
             InsufficientItemQuantityException.class,
             CartItemNotFoundException.class,
-            UserNotFoundException.class
+            UserNotFoundException.class,
+            NoItemsInCartException.class
     })
     @ResponseBody
     public ResponseEntity<String> handleNotFoundException(RuntimeException e) {
@@ -71,10 +73,17 @@ public class ItemControllerAdvise {
     }
 
     @ExceptionHandler({
-            NoItemsInCartException.class
-    })
+            InvalidCredentialsException.class})
     @ResponseBody
-    public ResponseEntity<String> handleNoItemsInCartException(RuntimeException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleInvalidCredentialsException(RuntimeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
     }
+
+//    @ExceptionHandler({
+//            NoItemsInCartException.class
+//    })
+//    @ResponseBody
+//    public ResponseEntity<String> handleNoItemsInCartException(RuntimeException e) {
+//        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//    }
 }
