@@ -4,19 +4,19 @@ import com.tinqin.bff.api.operation.item.getItemByTagId.GetItemByTagIdInput;
 import com.tinqin.bff.api.operation.item.getItemByTagId.GetItemByTagIdOperation;
 import com.tinqin.bff.api.operation.item.getItemByTagId.GetItemByTagIdResult;
 import com.tinqin.bff.api.operation.item.getItemByTagId.GetItemByTagIdSingleItem;
+import com.tinqin.bff.core.exception.ServiceUnavailableException;
+import com.tinqin.bff.core.exception.TagNotFoundException;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferenceIdSingleItem;
+import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferencedIdResult;
 import com.tinqin.storage.restexport.StorageItemRestExport;
 import com.tinqin.zoostore.api.operations.item.BaseEditItemResult;
 import com.tinqin.zoostore.api.operations.item.getAllItem.GetAllItemOperationProcessorSingleItem;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,19 +27,36 @@ public class GetItemByTagIdOperationProcessor implements GetItemByTagIdOperation
     @Override
     public GetItemByTagIdResult process(GetItemByTagIdInput input) {
 
-        Set<GetAllItemOperationProcessorSingleItem> items = zooStoreClient.getAllItems(input.getIncludeArchived(),
-                input.getTagId().toString(),
-                input.getItemsPerPage(),
-                input.getPage()
-        ).getItems();
+        Set<GetAllItemOperationProcessorSingleItem> items;
+        try {
+            items = zooStoreClient.getAllItems(input.getIncludeArchived(),
+                    input.getTagId().toString(),
+                    input.getItemsPerPage(),
+                    input.getPage()
+            ).getItems();
+        }catch (FeignException e){
+            switch (e.status()) {
+                case (-1) -> throw new ServiceUnavailableException("storage");
+                case (404) -> throw new TagNotFoundException(input.getTagId());
+                default -> throw new RuntimeException(e);
+            }
+        }
 
+//        List<GetStorageItemByReferenceIdSingleItem> storages = this.storageClient.getItemByReferencedItemId(items
+//                .stream()
+//                .map(BaseEditItemResult::getId)
+//                .map(UUID::toString)
+//                .collect(Collectors.toSet())
+//        ).getItems();
 
-        List<GetStorageItemByReferenceIdSingleItem> storages = this.storageClient.getItemByReferencedItemId(items
-                .stream()
+        List<GetStorageItemByReferenceIdSingleItem> storages = items.parallelStream()
                 .map(BaseEditItemResult::getId)
                 .map(UUID::toString)
-                .collect(Collectors.toSet())
-        ).getItems();
+                .map(this::getStorageItem)
+                .map(GetStorageItemByReferencedIdResult::getItems)
+                .flatMap(Collection::stream)
+                .toList();
+
 
         return GetItemByTagIdResult.builder()
                 .items(items.stream()
@@ -71,5 +88,18 @@ public class GetItemByTagIdOperationProcessor implements GetItemByTagIdOperation
                 .storageItemPrice(pair.getValue().getPrice())
                 .storageItemQuantity(pair.getValue().getQuantity())
                 .build();
+    }
+
+
+    private GetStorageItemByReferencedIdResult getStorageItem(String tagId) {
+        try {
+            return this.storageClient.getItemByReferencedItemId(Set.of(tagId));
+        } catch (FeignException e) {
+            switch (e.status()) {
+                case (-1) -> throw new ServiceUnavailableException("storage");
+                case (404) -> throw new TagNotFoundException(UUID.fromString(tagId));
+                default -> throw new RuntimeException(e);
+            }
+        }
     }
 }

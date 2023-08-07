@@ -43,7 +43,7 @@ public class ItemControllerAdvise {
                 .stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(System.lineSeparator()));
-        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(result, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ServiceUnavailableException.class)
@@ -58,7 +58,8 @@ public class ItemControllerAdvise {
             InsufficientItemQuantityException.class,
             CartItemNotFoundException.class,
             UserNotFoundException.class,
-            NoItemsInCartException.class
+            NoItemsInCartException.class,
+            TagNotFoundException.class
     })
     @ResponseBody
     public ResponseEntity<String> handleNotFoundException(RuntimeException e) {
