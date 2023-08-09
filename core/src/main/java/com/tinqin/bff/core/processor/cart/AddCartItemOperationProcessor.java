@@ -49,6 +49,7 @@ public class AddCartItemOperationProcessor implements AddCartItemOperation {
             }
         }
 
+        //TODO fix instantiation with new
         GetStorageItemByReferencedIdResult storage = new GetStorageItemByReferencedIdResult();
         try {
             storage = this.storageClient.getItemByReferencedItemId(Set.of(referencedItem.toString()));
@@ -64,11 +65,6 @@ public class AddCartItemOperationProcessor implements AddCartItemOperation {
                 .findFirst()
                 .orElseThrow(() -> new StoreItemNotFoundException(referencedItem));
 
-
-//        int quantityDifference = storageItem.getQuantity() - input.getQuantity();
-//        if (quantityDifference < 0) {
-//            throw new InsufficientItemQuantityException(referencedItem, input.getQuantity(), storageItem.getQuantity());
-//        }
 
         String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not valid"));

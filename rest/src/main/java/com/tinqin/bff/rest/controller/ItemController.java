@@ -67,7 +67,7 @@ public class ItemController {
         return ResponseEntity.ok(this.getItemByTagId.process(input));
     }
 
-    @GetMapping
+    @GetMapping(path = "/partial")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<GetItemByPartialTitleResult> getItemByPartialTitle(
             @RequestParam String title,

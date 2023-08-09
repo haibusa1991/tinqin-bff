@@ -12,7 +12,9 @@ public enum TokenWhitelist {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
-            "/items"
+            "/items",
+            "/items/**"
+
     }),
 
     POST(new String[]{

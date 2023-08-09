@@ -1,6 +1,8 @@
 package com.tinqin.bff.persistence.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.util.Optional;

@@ -11,7 +11,7 @@
     </parent>
     <properties>
         <revision>0.0.2-SNAPSHOT</revision>
-        <zoostore.version>0.0.7-SNAPSHOT</zoostore.version>
+        <zoostore.version>0.0.8-SNAPSHOT</zoostore.version>
         <storage.version>0.0.7-SNAPSHOT</storage.version>
         <java.version>17</java.version>
     </properties>

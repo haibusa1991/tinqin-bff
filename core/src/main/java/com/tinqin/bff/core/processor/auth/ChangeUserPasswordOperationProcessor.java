@@ -18,7 +18,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ChangeUserPasswordOperationProcessor implements ChangeUserPasswordOperation {
+public class
+ChangeUserPasswordOperationProcessor implements ChangeUserPasswordOperation {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final InvalidatedTokensRepository invalidatedTokensRepository;
