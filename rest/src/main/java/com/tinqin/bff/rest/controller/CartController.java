@@ -47,6 +47,7 @@ public class CartController {
     @ApiResponse(responseCode = "400", description = "Invalid field contents.")
     @ApiResponse(responseCode = "403", description = "JWT is invalid.")
     @ApiResponse(responseCode = "404", description = "Specified item does not exist.")
+    @ApiResponse(responseCode = "503", description = "Zoostore or Storage service is not available")
     @Operation(description = "Adds the specified quantity of the specified item to the cart of the current user.",
             summary = "Adds item to current user's cart.")
     public ResponseEntity<AddCartItemResult> addCartItem(@RequestBody @Valid AddCartItemInput input) {
@@ -75,9 +76,9 @@ public class CartController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "Item successfully removed from cart.")
-    @ApiResponse(responseCode = "400", description = "Invalid field contents.")
     @ApiResponse(responseCode = "403", description = "JWT is invalid.")
     @ApiResponse(responseCode = "404", description = "Specified item not found in cart.")
+    @ApiResponse(responseCode = "409", description = "Invalid field contents.")
     @Operation(description = "Removes the specified item from the cart for the current user.",
             summary = "Removes item from cart.")
     @DeleteMapping(path = "/{referencedItemId}")
@@ -89,6 +90,7 @@ public class CartController {
     @ApiResponse(responseCode = "200", description = "Items successfully ordered.")
     @ApiResponse(responseCode = "403", description = "JWT is invalid.")
     @ApiResponse(responseCode = "404", description = "Cart is empty.")
+    @ApiResponse(responseCode = "503", description = "Zoostore or Storage service is not available")
     @Operation(description = "Puts order towards the storage services and empties the cart.",
             summary = "Orders all items in cart.")
     @PostMapping(path = "/place-order")

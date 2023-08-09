@@ -1,48 +1,15 @@
-#spring:
-#  datasource:
-#    driverClassName: org.h2.Driver
-#    url: jdbc:h2:~/test
-#    username: sa
-#    password: password
-#  sql:
-#    init:
-#      mode: always
-#  jpa:
-#    database-platform: org.hibernate.dialect.H2Dialect
-#    generate-ddl: true
-#    hibernate:
-#      ddl-auto: create-drop
-#    open-in-view: false
-#    properties:
-#      hibernate:
-#        format_sql: true
-#    defer-datasource-initialization: true
-
-
 spring:
   datasource:
-    driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tinqin-bff-test?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: toor
-  sql:
-    init:
-      mode: always
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:~/test
+    username: sa
+    password: password
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     generate-ddl: true
     hibernate:
-      ddl-auto: update
-    open-in-view: false
-    properties:
-      hibernate:
-        format_sql: true
-    defer-datasource-initialization: true
-  logging:
-    level:
-      org.springframework.security=DEBUG
-server:
-  port: 8082
+      ddl-auto: create-drop
+
 jwt-secret: SkzL9DNlghANAvjcxxKtSiwENSPYwbbI
 
 

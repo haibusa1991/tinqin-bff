@@ -35,8 +35,11 @@ public class RemoveCartItemOperationService implements RemoveCartItemOperation {
         String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not valid"));
 
+        user.removeCartItem(cartItem);
+        User persisted = this.userRepository.save(user);
+
         return new RemoveCartItemResult(
-                user.getCartItems()
+                persisted.getCartItems()
                         .stream()
                         .map(this::serializeCartItem)
                         .collect(Collectors.toSet())

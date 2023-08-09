@@ -6,6 +6,8 @@ import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResult;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderOperation;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResultItemData;
 import com.tinqin.bff.core.exception.NoItemsInCartException;
+import com.tinqin.bff.core.exception.ServiceUnavailableException;
+import com.tinqin.bff.core.exception.StoreItemNotFoundException;
 import com.tinqin.bff.core.processor.cart.EmptyCartOperationProcessor;
 import com.tinqin.bff.persistence.entity.CartItem;
 import com.tinqin.bff.persistence.entity.User;
@@ -14,6 +16,7 @@ import com.tinqin.bff.persistence.repository.UserRepository;
 import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInputCartItem;
 import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResultSingleItem;
 import com.tinqin.storage.restexport.StorageItemRestExport;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,8 +56,15 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
                         .cartItems(cartItems)
                         .build();
 
-        com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult placeOrderResult =
-                storageClient.placeOrder(restInput);
+        com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult placeOrderResult = com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult.builder().build();
+
+        try {
+            placeOrderResult = storageClient.placeOrder(restInput);
+        } catch (FeignException e) {
+            switch (e.status()) {
+                case -1 -> throw new ServiceUnavailableException("storage");
+            }
+        }
 
         EmptyCartOperationProcessor.builder()
                 .cartItemRepository(this.cartItemRepository)

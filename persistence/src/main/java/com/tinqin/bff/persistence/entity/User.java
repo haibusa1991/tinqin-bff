@@ -43,4 +43,8 @@ public class User {
         return this.cartItems.add(cartItem);
     }
 
+    public boolean removeCartItem(CartItem cartItem){
+        return this.cartItems.remove(cartItem);
+    }
+
 }

@@ -28,7 +28,6 @@ public class SecurityConfiguration {
         return http
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(c -> c
-                        .requestMatchers("/test","/test/**").permitAll()
                         .requestMatchers(HttpMethod.POST, TokenWhitelist.POST.values).permitAll()
                         .requestMatchers(HttpMethod.GET, "/items", "/auth").authenticated()
                         .requestMatchers(HttpMethod.PATCH,  "/auth").authenticated()
