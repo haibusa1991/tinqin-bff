@@ -30,8 +30,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(c -> c
                         .requestMatchers(HttpMethod.POST, TokenWhitelist.POST.values).permitAll()
                         .requestMatchers(HttpMethod.GET, "/items", "/auth").authenticated()
-                        .requestMatchers(HttpMethod.PATCH,  "/auth").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/auth").authenticated()
                         .requestMatchers("/cart", "/cart/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/voucher", "/voucher/**").authenticated()
                         .requestMatchers(HttpMethod.GET, TokenWhitelist.GET.values).permitAll()
                 )
                 .cors(c -> c.disable())

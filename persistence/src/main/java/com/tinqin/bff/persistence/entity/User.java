@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -14,9 +15,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
 public class User {
+
+    @Builder
+    public User(String email, String password, String firstName, String lastName, String phoneNumber) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.credit = BigDecimal.ZERO;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,14 +46,16 @@ public class User {
 
     private String phoneNumber;
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "user")
+    private BigDecimal credit;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Set<CartItem> cartItems;
 
-    public boolean addCartItem(CartItem cartItem){
+    public boolean addCartItem(CartItem cartItem) {
         return this.cartItems.add(cartItem);
     }
 
-    public boolean removeCartItem(CartItem cartItem){
+    public boolean removeCartItem(CartItem cartItem) {
         return this.cartItems.remove(cartItem);
     }
 

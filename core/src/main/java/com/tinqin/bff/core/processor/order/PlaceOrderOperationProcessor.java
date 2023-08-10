@@ -5,6 +5,8 @@ import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderInput;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResult;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderOperation;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResultItemData;
+import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherOperation;
+import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherOperationInput;
 import com.tinqin.bff.core.exception.NoItemsInCartException;
 import com.tinqin.bff.core.exception.ServiceUnavailableException;
 import com.tinqin.bff.core.exception.StoreItemNotFoundException;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
     private final UserRepository userRepository;
     private final StorageItemRestExport storageClient;
     private final CartItemRepository cartItemRepository;
+    private final PurchaseVoucherOperation purchaseVoucher;
 
     @Override
     public PlaceOrderResult process(PlaceOrderInput input) {
@@ -44,6 +48,10 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
         if (cart.isEmpty()) {
             throw new NoItemsInCartException();
         }
+
+        this.purchaseVoucher.process(PurchaseVoucherOperationInput.builder()
+                .items(cart.stream().map(CartItem::getReferencedItemId).collect(Collectors.toSet()))
+                .build());
 
         List<PlaceOrderInputCartItem> cartItems = cart.stream()
                 .map(this::maptToPlaceOrderInputCartItem)

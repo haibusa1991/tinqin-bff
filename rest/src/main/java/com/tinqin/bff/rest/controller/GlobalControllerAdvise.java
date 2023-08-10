@@ -5,7 +5,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestControllerAdvice
-public class ItemControllerAdvise {
+public class GlobalControllerAdvise {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
@@ -59,11 +58,22 @@ public class ItemControllerAdvise {
             CartItemNotFoundException.class,
             UserNotFoundException.class,
             NoItemsInCartException.class,
-            TagNotFoundException.class
+            TagNotFoundException.class,
+            VoucherNotFoundException.class
     })
     @ResponseBody
     public ResponseEntity<String> handleNotFoundException(RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler({
+            VoucherExpiredException.class,
+            VoucherIsExhaustedException.class
+    })
+    @ResponseBody
+    public ResponseEntity<String> handleBadRequest(RuntimeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({
@@ -80,11 +90,4 @@ public class ItemControllerAdvise {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
-//    @ExceptionHandler({
-//            NoItemsInCartException.class
-//    })
-//    @ResponseBody
-//    public ResponseEntity<String> handleNoItemsInCartException(RuntimeException e) {
-//        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
 }

@@ -33,6 +33,7 @@ public class RegisterUserOperationProcessor implements RegisterUserOperation {
                 .firstName(persisted.getFirstName())
                 .lastName(persisted.getLastName())
                 .phoneNumber(persisted.getPhoneNumber())
+                .credit(persisted.getCredit().doubleValue())
                 .build();
     }
 }

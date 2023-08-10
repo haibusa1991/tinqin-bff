@@ -16,4 +16,5 @@ public class RegisterUserResult implements ProcessorResult {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private double credit;
 }
