@@ -1,6 +1,7 @@
 package com.tinqin.bff.core.processor.order;
 
 import com.tinqin.bff.api.operation.cart.emptyCart.EmptyCartInput;
+import com.tinqin.bff.api.operation.cart.emptyCart.EmptyCartOperation;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderInput;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResult;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderOperation;
@@ -19,23 +20,27 @@ import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInputCartIte
 import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResultSingleItem;
 import com.tinqin.storage.restexport.StorageItemRestExport;
 import feign.FeignException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
     private final UserRepository userRepository;
     private final StorageItemRestExport storageClient;
     private final CartItemRepository cartItemRepository;
     private final PurchaseVoucherOperation purchaseVoucher;
+    private final EmptyCartOperation emptyCart;
 
     @Override
     public PlaceOrderResult process(PlaceOrderInput input) {
@@ -60,11 +65,13 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
         com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInput restInput =
                 com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInput
                         .builder()
+                        .userCredit(user.getCredit().doubleValue())
                         .userId(user.getId().toString())
                         .cartItems(cartItems)
                         .build();
 
-        com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult placeOrderResult = com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult.builder().build();
+        com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult placeOrderResult =
+                com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult.builder().build();
 
         try {
             placeOrderResult = storageClient.placeOrder(restInput);
@@ -73,12 +80,16 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
                 case -1 -> throw new ServiceUnavailableException("storage");
             }
         }
+        user.setCredit(BigDecimal.valueOf(placeOrderResult.getRemainingUserCredit()));
+        this.userRepository.save(user);
 
-        EmptyCartOperationProcessor.builder()
-                .cartItemRepository(this.cartItemRepository)
-                .userRepository(this.userRepository)
-                .build()
-                .process(new EmptyCartInput());
+        this.emptyCart.process(new EmptyCartInput());
+
+//        EmptyCartOperationProcessor.builder()
+//                .cartItemRepository(this.cartItemRepository)
+//                .userRepository(this.userRepository)
+//                .build() 
+//                .process(new EmptyCartInput());
 
         return PlaceOrderResult.builder()
                 .orderPrice(placeOrderResult.getOrderPrice())

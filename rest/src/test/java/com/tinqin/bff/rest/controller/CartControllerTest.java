@@ -1,5 +1,8 @@
 package com.tinqin.bff.rest.controller;
 
+import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherOperation;
+import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherOperationInput;
+import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherResult;
 import com.tinqin.bff.persistence.entity.CartItem;
 import com.tinqin.bff.persistence.entity.User;
 import com.tinqin.bff.persistence.repository.CartItemRepository;
@@ -54,6 +57,9 @@ public class CartControllerTest {
 
     @MockBean
     private StorageItemRestExport storageClient;
+
+    @MockBean
+    private PurchaseVoucherOperation purchaseVoucher;
 
     private String authorization;
 
@@ -595,11 +601,14 @@ public class CartControllerTest {
                 .items(List.of(item))
                 .timestamp(timestamp)
                 .user(user.getId())
+                .remainingUserCredit(0.00)
                 .orderPrice(10.00)
                 .build();
 
         when(storageClient.placeOrder(any(com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInput.class)))
                 .thenReturn(placeOrder);
+
+        when(purchaseVoucher.process(any(PurchaseVoucherOperationInput.class))).thenReturn(mock(PurchaseVoucherResult.class));
 
         mockMvc.perform(post("/cart/place-order")
                         .header("Authorization", this.authorization)

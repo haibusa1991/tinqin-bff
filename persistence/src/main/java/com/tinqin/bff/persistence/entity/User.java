@@ -19,13 +19,15 @@ import java.util.UUID;
 public class User {
 
     @Builder
-    public User(String email, String password, String firstName, String lastName, String phoneNumber) {
+    public User(String email, String password, String firstName, String lastName, String phoneNumber, UUID id, Set<CartItem> cartItems) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.credit = BigDecimal.ZERO;
+        this.id = id;
+        this.cartItems = cartItems;
     }
 
     @Id
