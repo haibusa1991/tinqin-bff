@@ -85,12 +85,6 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
 
         this.emptyCart.process(new EmptyCartInput());
 
-//        EmptyCartOperationProcessor.builder()
-//                .cartItemRepository(this.cartItemRepository)
-//                .userRepository(this.userRepository)
-//                .build() 
-//                .process(new EmptyCartInput());
-
         return PlaceOrderResult.builder()
                 .orderPrice(placeOrderResult.getOrderPrice())
                 .items(placeOrderResult
