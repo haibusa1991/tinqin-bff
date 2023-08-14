@@ -1,9 +1,9 @@
 package com.tinqin.bff.rest.controller;
 
+import com.tinqin.bff.api.annotations.RestExport;
 import com.tinqin.bff.api.operation.voucher.activate.ActivateVoucherInput;
 import com.tinqin.bff.api.operation.voucher.activate.ActivateVoucherOperation;
 import com.tinqin.bff.api.operation.voucher.activate.ActivateVoucherResult;
-import com.tinqin.bff.rest.annotations.RestExport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
