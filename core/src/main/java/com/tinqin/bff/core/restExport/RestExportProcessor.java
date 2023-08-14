@@ -69,7 +69,7 @@ public class RestExportProcessor {
         System.out.println();
     }
 
-    private RequestMappingData getHttpMethod(Method method) {
+    private RequestMappingData getHttpMethod(Method method)  {
         List<Annotation> annotations = Arrays.stream(method.getDeclaredAnnotations()).toList();
 
         if (annotations.stream().anyMatch(e -> e.annotationType().equals(GetMapping.class))) {
