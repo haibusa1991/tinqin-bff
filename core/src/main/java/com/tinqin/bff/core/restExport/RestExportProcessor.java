@@ -60,23 +60,20 @@ public class RestExportProcessor {
         }
 
 
-        String requestMappingPath = this.getRequestMappingPaths(voucherClass);
+//        String requestMappingPath = this.getRequestMappingPaths(voucherClass);
         List<Method> annotatedMethods = this.getAnnotatedMethods(voucherClass).stream().sorted(Comparator.comparing(Method::getName).reversed()).toList();
 
-        Method method = annotatedMethods.get(0);
+//        Method method = annotatedMethods.get(0);
+        Method method = annotatedMethods.get(3);
 
-
-        RequestMappingData.builder()
+        RequestMappingData requestMappingData = RequestMappingData.builder()
                 .returnType(method.getReturnType())
                 .methodName(method.getName())
-                .httpMethod(this.getHttpMethod(method))
-                .pathValue()
+                .requestMapping(this.getRequestMappingAnnotation(method))
+                .parameterAnnotations(method.getParameterAnnotations())
+                .parameters(method.getParameters())
+                .build();
 
-        RequestMappingData httpMethod = this.getHttpMethod(method);
-        Class<?> returnType = ;
-        String methodSignature = this.getMethodSignature(method);
-        GetMethodProcessor processor = new GetMethodProcessor();
-        String simpleMethod = processor.getSimpleMethod(requestMappingPath, httpMethod, returnType, methodSignature);
 
         System.out.println();
     }
@@ -165,6 +162,24 @@ public class RestExportProcessor {
 //                .build();
 //    }
 
+    private RequestMapping getRequestMappingAnnotation(Method method) {
+        List<Class<? extends Annotation>> requestMappings = List.of(
+                GetMapping.class,
+                PostMapping.class,
+                PutMapping.class,
+                PatchMapping.class,
+                DeleteMapping.class,
+                RequestMapping.class
+        );
+
+        Annotation annotation = Arrays.stream(method.getDeclaredAnnotations()).filter(e ->
+                        requestMappings.contains(e.annotationType()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No annotation of type RequestMapping or its aliases is present."));
+
+        return GetRequestMapping.from(annotation);
+    }
+
     private String getRequestMappingPath(List<Annotation> methodAnnotations, Class<?> requestMappingAliasClass) {
         Annotation annotation = methodAnnotations.stream().filter(e -> e.annotationType().equals(requestMappingAliasClass)).findFirst().orElseThrow();
 
@@ -202,15 +217,15 @@ public class RestExportProcessor {
                 .toList();
     }
 
-    private String getRequestMappingPaths(Class<?> c) {
-
-        return Arrays.stream(c.getDeclaredAnnotations())
-                .filter(e -> e.annotationType().equals(RequestMapping.class))
-                .map(e -> ((RequestMapping) e))
-                .map(RequestMapping::path)
-                .flatMap(Stream::of)
-                .toArray(String[]::new)[0];
-    }
+//    private String getRequestMappingPaths(Class<?> c) {
+//
+//        return Arrays.stream(c.getDeclaredAnnotations())
+//                .filter(e -> e.annotationType().equals(GetRequestMapping.class))
+//                .map(e -> ((GetRequestMapping) e))
+//                .map(GetRequestMapping::path)
+//                .flatMap(Stream::of)
+//                .toArray(String[]::new)[0];
+//    }
 
     private String getMethodSignature(Method method) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
@@ -250,81 +265,43 @@ public class RestExportProcessor {
         return stringBuilder.toString();
     }
 
-    private Class<RequestMapping> convertToRequestMapping(GetMapping getMapping) throws NoSuchFieldException, IllegalAccessException {
-
-        Class<RequestMapping> requestMappingClass = RequestMapping.class;
-
-        Field name = requestMappingClass.getDeclaredField("name");
-        name.setAccessible(true);
-        name.set(String.class,getMapping.name());
-
-        Field value = requestMappingClass.getDeclaredField("value");
-        value.setAccessible(true);
-        value.set(String[].class,getMapping.path());
-
-        Field path = requestMappingClass.getDeclaredField("path");
-        path.setAccessible(true);
-        path.set(String[].class,getMapping.value());
-
-        Field method = requestMappingClass.getDeclaredField("method");
-        method.setAccessible(true);
-        method.set(RequestMethod[].class, new RequestMethod[]{RequestMethod.GET});
-
-        Field params = requestMappingClass.getDeclaredField("params");
-        params.setAccessible(true);
-        params.set(String[].class,getMapping.params());
-
-        Field headers = requestMappingClass.getDeclaredField("headers");
-        headers.setAccessible(true);
-        headers.set(String[].class,getMapping.params());
-
-        Field consumes = requestMappingClass.getDeclaredField("consumes");
-        consumes.setAccessible(true);
-        consumes.set(String[].class,getMapping.consumes());
-
-        Field produces = requestMappingClass.getDeclaredField("produces");
-        produces.setAccessible(true);
-        produces.set(String[].class,getMapping.produces());
-
-        return requestMappingClass;
-    }
-
-    private Class<RequestMapping> convertToRequestMapping(PostMapping postMapping) throws NoSuchFieldException, IllegalAccessException {
-
-        Class<RequestMapping> requestMappingClass = RequestMapping.class;
-
-        Field name = requestMappingClass.getDeclaredField("name");
-        name.setAccessible(true);
-        name.set(String.class,postMapping.name());
-
-        Field value = requestMappingClass.getDeclaredField("value");
-        value.setAccessible(true);
-        value.set(String[].class,postMapping.path());
-
-        Field path = requestMappingClass.getDeclaredField("path");
-        path.setAccessible(true);
-        path.set(String[].class,postMapping.value());
-
-        Field method = requestMappingClass.getDeclaredField("method");
-        method.setAccessible(true);
-        method.set(RequestMethod[].class, new RequestMethod[]{RequestMethod.POST});
-
-        Field params = requestMappingClass.getDeclaredField("params");
-        params.setAccessible(true);
-        params.set(String[].class,postMapping.params());
-
-        Field headers = requestMappingClass.getDeclaredField("headers");
-        headers.setAccessible(true);
-        headers.set(String[].class,postMapping.params());
-
-        Field consumes = requestMappingClass.getDeclaredField("consumes");
-        consumes.setAccessible(true);
-        consumes.set(String[].class,postMapping.consumes());
-
-        Field produces = requestMappingClass.getDeclaredField("produces");
-        produces.setAccessible(true);
-        produces.set(String[].class,postMapping.produces());
-
-        return requestMappingClass;
-    }
+//
+//    private Class<GetRequestMapping> convertToRequestMapping(PostMapping postMapping) throws NoSuchFieldException, IllegalAccessException {
+//
+//        Class<GetRequestMapping> requestMappingClass = GetRequestMapping.class;
+//
+//        Field name = requestMappingClass.getDeclaredField("name");
+//        name.setAccessible(true);
+//        name.set(String.class,postMapping.name());
+//
+//        Field value = requestMappingClass.getDeclaredField("value");
+//        value.setAccessible(true);
+//        value.set(String[].class,postMapping.path());
+//
+//        Field path = requestMappingClass.getDeclaredField("path");
+//        path.setAccessible(true);
+//        path.set(String[].class,postMapping.value());
+//
+//        Field method = requestMappingClass.getDeclaredField("method");
+//        method.setAccessible(true);
+//        method.set(RequestMethod[].class, new RequestMethod[]{RequestMethod.POST});
+//
+//        Field params = requestMappingClass.getDeclaredField("params");
+//        params.setAccessible(true);
+//        params.set(String[].class,postMapping.params());
+//
+//        Field headers = requestMappingClass.getDeclaredField("headers");
+//        headers.setAccessible(true);
+//        headers.set(String[].class,postMapping.params());
+//
+//        Field consumes = requestMappingClass.getDeclaredField("consumes");
+//        consumes.setAccessible(true);
+//        consumes.set(String[].class,postMapping.consumes());
+//
+//        Field produces = requestMappingClass.getDeclaredField("produces");
+//        produces.setAccessible(true);
+//        produces.set(String[].class,postMapping.produces());
+//
+//        return requestMappingClass;
+//    }
 }

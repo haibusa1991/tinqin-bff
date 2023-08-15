@@ -12,7 +12,7 @@ import java.io.IOException;
 public class GetMethodProcessor {
 
     public String getSimpleMethod(String requestMappingPath, RequestMappingData mappingData, Class<?> returnType, String methodSignature) throws JCodeModelException {
-        this.test(returnType);
+//        this.test(returnType);
 //        StringBuilder stringBuilder = new StringBuilder("@RequestLine(\"")
 //                .append(mappingData.getMethodAnnotation().toString())
 //                .append(" ")

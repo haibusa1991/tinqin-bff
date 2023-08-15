@@ -2,6 +2,7 @@ package com.tinqin.bff.core.restExport;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
@@ -12,8 +13,7 @@ public class RequestMappingData {
 
     private Class<?> returnType;
     private String methodName;
-    private ControllerHttpMethod httpMethod;
-    private String pathValue;
-    private Annotation[][] annotations;
+    private RequestMapping requestMapping;
+    private Annotation[][] parameterAnnotations;
     private Parameter[] parameters;
 }
