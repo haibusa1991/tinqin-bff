@@ -22,10 +22,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -47,120 +46,56 @@ public class RestExportProcessor {
 //                .findFirst()
 //                .orElseThrow();
 //
-        Class<?> voucherClass = Object.class;
+        Class<?> testClass;
         try {
-            voucherClass = Class.forName(
+            testClass = Class.forName(
                     scanner.findCandidateComponents("com.tinqin.bff")
                             .stream()
                             .map(BeanDefinition::getBeanClassName)
                             .filter(className -> className.toLowerCase().contains("test"))
                             .findFirst()
                             .orElseThrow());
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            throw new RuntimeException("Fix me: Test class not present");
         }
 
 
-//        String requestMappingPath = this.getRequestMappingPaths(voucherClass);
-        List<Method> annotatedMethods = this.getAnnotatedMethods(voucherClass).stream().sorted(Comparator.comparing(Method::getName).reversed()).toList();
+        List<RequestMappingData> controllerAnnotations = this.getAnnotatedMethods(testClass)
+                .stream()
+                .sorted(Comparator.comparing(Method::getName).reversed())
+                .map(this::getRequestMappingData)
+                .toList();
 
-//        Method method = annotatedMethods.get(0);
-        Method method = annotatedMethods.get(3);
+        RestExportGenerator generator = new RestExportGenerator();
 
-        RequestMappingData requestMappingData = RequestMappingData.builder()
+        try {
+            generator.generate(controllerAnnotations);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println();
+    }
+
+    private RequestMappingData getRequestMappingData(Method method) {
+        String classRequestMappingPath = Stream.of(method.getDeclaringClass().getDeclaredAnnotations())
+                .filter(e -> e.annotationType().equals(RequestMapping.class))
+                .findFirst()
+                .map(e -> (RequestMapping) e)
+                .map(RequestMapping::path)
+                .map(e -> e.length > 0 ? e[0] : "")
+                .orElse("");
+
+        System.out.println();
+        return RequestMappingData.builder()
+                .classRequestMappingPath(classRequestMappingPath)
                 .returnType(method.getReturnType())
                 .methodName(method.getName())
                 .requestMapping(this.getRequestMappingAnnotation(method))
                 .parameterAnnotations(method.getParameterAnnotations())
                 .parameters(method.getParameters())
                 .build();
-
-
-        System.out.println();
     }
-
-    private ControllerHttpMethod getHttpMethod(Method method) {
-        List<Annotation> annotations = Arrays.stream(method.getDeclaredAnnotations()).toList();
-
-        if (annotations.stream().anyMatch(e -> e.annotationType().equals(GetMapping.class))) {
-            return ControllerHttpMethod.GET;
-        }
-
-        if (annotations.stream().anyMatch(e -> e.annotationType().equals(PostMapping.class))) {
-            return ControllerHttpMethod.POST;
-        }
-
-        if (annotations.stream().anyMatch(e -> e.annotationType().equals(PatchMapping.class))) {
-            return ControllerHttpMethod.PATCH;
-        }
-
-        if (annotations.stream().anyMatch(e -> e.annotationType().equals(PutMapping.class))) {
-            return ControllerHttpMethod.PUT;
-        }
-
-        if (annotations.stream().anyMatch(e -> e.annotationType().equals(DeleteMapping.class))) {
-            return ControllerHttpMethod.DELETE;
-        }
-
-        throw new IllegalArgumentException("Http method not recognized or using @RequestMapping.");
-    }
-
-//    private RequestMappingData getHttpMethod(Method method) {
-//        List<Annotation> annotations = Arrays.stream(method.getDeclaredAnnotations()).toList();
-//
-//        if (annotations.stream().anyMatch(e -> e.annotationType().equals(GetMapping.class))) {
-//            return this.getRequestMappingData(annotations, GetMapping.class);
-//        }
-//
-//        if (annotations.stream().anyMatch(e -> e.annotationType().equals(PostMapping.class))) {
-//            return this.getRequestMappingData(annotations, PostMapping.class);
-//        }
-//
-//        if (annotations.stream().anyMatch(e -> e.annotationType().equals(PatchMapping.class))) {
-//            return this.getRequestMappingData(annotations, PatchMapping.class);
-//        }
-//
-//        if (annotations.stream().anyMatch(e -> e.annotationType().equals(PutMapping.class))) {
-//            return this.getRequestMappingData(annotations, PutMapping.class);
-//        }
-//
-//        if (annotations.stream().anyMatch(e -> e.annotationType().equals(DeleteMapping.class))) {
-//            return this.getRequestMappingData(annotations, DeleteMapping.class);
-//        }
-//
-//        throw new IllegalArgumentException("Http method not recognized or using @RequestMapping.");
-//    }
-
-//    private RequestMappingData getRequestMappingData(List<Annotation> methodAnnotations, Class<?> httpMethodAnnotationClass) {
-//        Annotation annotation = methodAnnotations.stream().filter(e -> e.annotationType().equals(httpMethodAnnotationClass)).findFirst().orElseThrow();
-//
-//        Map<Class<? extends Annotation>, ControllerHttpMethod> methods = Map.of(
-//                GetMapping.class, ControllerHttpMethod.GET,
-//                PostMapping.class, ControllerHttpMethod.POST,
-//                PutMapping.class, ControllerHttpMethod.PUT,
-//                PatchMapping.class, ControllerHttpMethod.PATCH,
-//                DeleteMapping.class, ControllerHttpMethod.DELETE
-//        );
-//
-//        String path;
-//        switch (httpMethodAnnotationClass.getName()) {
-//            case "org.springframework.web.bind.annotation.GetMapping" ->
-//                    path = ((GetMapping) annotation).path().length > 0 ? ((GetMapping) annotation).path()[0] : "";
-//            case "org.springframework.web.bind.annotation.PostMapping" ->
-//                    path = ((PostMapping) annotation).path().length > 0 ? ((PostMapping) annotation).path()[0] : "";
-//            case "org.springframework.web.bind.annotation.PutMapping" ->
-//                    path = ((PutMapping) annotation).path().length > 0 ? ((PutMapping) annotation).path()[0] : "";
-//            case "org.springframework.web.bind.annotation.PatchMapping" ->
-//                    path = ((PatchMapping) annotation).path().length > 0 ? ((PatchMapping) annotation).path()[0] : "";
-//            case "org.springframework.web.bind.annotation.DeleteMapping" ->
-//                    path = ((DeleteMapping) annotation).path().length > 0 ? ((DeleteMapping) annotation).path()[0] : "";
-//            default -> throw new IllegalArgumentException("Http method not recognized or using @RequestMapping.");
-//        }
-//
-//        return RequestMappingData.builder()
-//                .methodAnnotation(methods.get(httpMethodAnnotationClass))
-//                .pathValue(path)
-//                .build();
-//    }
 
     private RequestMapping getRequestMappingAnnotation(Method method) {
         List<Class<? extends Annotation>> requestMappings = List.of(
@@ -177,36 +112,7 @@ public class RestExportProcessor {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No annotation of type RequestMapping or its aliases is present."));
 
-        return GetRequestMapping.from(annotation);
-    }
-
-    private String getRequestMappingPath(List<Annotation> methodAnnotations, Class<?> requestMappingAliasClass) {
-        Annotation annotation = methodAnnotations.stream().filter(e -> e.annotationType().equals(requestMappingAliasClass)).findFirst().orElseThrow();
-
-        Map<Class<? extends Annotation>, ControllerHttpMethod> methods = Map.of(
-                GetMapping.class, ControllerHttpMethod.GET,
-                PostMapping.class, ControllerHttpMethod.POST,
-                PutMapping.class, ControllerHttpMethod.PUT,
-                PatchMapping.class, ControllerHttpMethod.PATCH,
-                DeleteMapping.class, ControllerHttpMethod.DELETE
-        );
-
-        String path;
-        switch (requestMappingAliasClass.getName()) {
-            case "org.springframework.web.bind.annotation.GetMapping" ->
-                    path = ((GetMapping) annotation).path().length > 0 ? ((GetMapping) annotation).path()[0] : "";
-            case "org.springframework.web.bind.annotation.PostMapping" ->
-                    path = ((PostMapping) annotation).path().length > 0 ? ((PostMapping) annotation).path()[0] : "";
-            case "org.springframework.web.bind.annotation.PutMapping" ->
-                    path = ((PutMapping) annotation).path().length > 0 ? ((PutMapping) annotation).path()[0] : "";
-            case "org.springframework.web.bind.annotation.PatchMapping" ->
-                    path = ((PatchMapping) annotation).path().length > 0 ? ((PatchMapping) annotation).path()[0] : "";
-            case "org.springframework.web.bind.annotation.DeleteMapping" ->
-                    path = ((DeleteMapping) annotation).path().length > 0 ? ((DeleteMapping) annotation).path()[0] : "";
-            default -> throw new IllegalArgumentException("Http method not recognized or using @RequestMapping.");
-        }
-
-        return path;
+        return ConvertRequestMapping.from(annotation);
     }
 
     private List<Method> getAnnotatedMethods(Class<?> c) {
@@ -216,92 +122,4 @@ public class RestExportProcessor {
                         .anyMatch(a -> a.annotationType().equals(RestExport.class)))
                 .toList();
     }
-
-//    private String getRequestMappingPaths(Class<?> c) {
-//
-//        return Arrays.stream(c.getDeclaredAnnotations())
-//                .filter(e -> e.annotationType().equals(GetRequestMapping.class))
-//                .map(e -> ((GetRequestMapping) e))
-//                .map(GetRequestMapping::path)
-//                .flatMap(Stream::of)
-//                .toArray(String[]::new)[0];
-//    }
-
-    private String getMethodSignature(Method method) {
-        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-        Parameter[] parameters = method.getParameters();
-        String name = method.getName();
-
-        StringBuilder sb = new StringBuilder(name);
-        sb.append("(");
-        for (int i = 0; i < parameters.length; i++) {
-            sb.append(this.getAnnotationMethodPair(parameterAnnotations[i][0], parameters[i]));
-        }
-        sb.append(")");
-
-        return sb.toString();
-    }
-
-    private String getAnnotationName(Annotation annotation) {
-        String name = annotation.annotationType().getName();
-        return name.substring(name.lastIndexOf('.') + 1);
-    }
-
-    private String getAnnotationMethodPair(Annotation annotation, Parameter parameter) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (annotation != null) {
-            stringBuilder
-                    .append("@")
-                    .append(annotation.annotationType().getName())
-                    .append(" ");
-        }
-
-        stringBuilder
-                .append(parameter.getType().getName())
-                .append(" ")
-                .append(parameter.getName());
-
-        return stringBuilder.toString();
-    }
-
-//
-//    private Class<GetRequestMapping> convertToRequestMapping(PostMapping postMapping) throws NoSuchFieldException, IllegalAccessException {
-//
-//        Class<GetRequestMapping> requestMappingClass = GetRequestMapping.class;
-//
-//        Field name = requestMappingClass.getDeclaredField("name");
-//        name.setAccessible(true);
-//        name.set(String.class,postMapping.name());
-//
-//        Field value = requestMappingClass.getDeclaredField("value");
-//        value.setAccessible(true);
-//        value.set(String[].class,postMapping.path());
-//
-//        Field path = requestMappingClass.getDeclaredField("path");
-//        path.setAccessible(true);
-//        path.set(String[].class,postMapping.value());
-//
-//        Field method = requestMappingClass.getDeclaredField("method");
-//        method.setAccessible(true);
-//        method.set(RequestMethod[].class, new RequestMethod[]{RequestMethod.POST});
-//
-//        Field params = requestMappingClass.getDeclaredField("params");
-//        params.setAccessible(true);
-//        params.set(String[].class,postMapping.params());
-//
-//        Field headers = requestMappingClass.getDeclaredField("headers");
-//        headers.setAccessible(true);
-//        headers.set(String[].class,postMapping.params());
-//
-//        Field consumes = requestMappingClass.getDeclaredField("consumes");
-//        consumes.setAccessible(true);
-//        consumes.set(String[].class,postMapping.consumes());
-//
-//        Field produces = requestMappingClass.getDeclaredField("produces");
-//        produces.setAccessible(true);
-//        produces.set(String[].class,postMapping.produces());
-//
-//        return requestMappingClass;
-//    }
 }

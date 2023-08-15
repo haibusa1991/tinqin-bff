@@ -1,6 +1,8 @@
 package com.tinqin.bff.rest.controller;
 
 import com.tinqin.bff.api.annotations.RestExport;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -10,6 +12,12 @@ public class TestRestExportClass {
     @GetMapping
     private String unannotatedMethod() {
         return "unannotated get";
+    }
+
+    @RestExport
+    @GetMapping
+    private ResponseEntity<String> responseEntityGet() {
+        return ResponseEntity.ok("ResponseEntity Get");
     }
 
 //    @RestExport
@@ -45,7 +53,7 @@ public class TestRestExportClass {
 
     @RestExport
     @GetMapping
-    private String getWithMultipleQueryParam(@RequestParam String param1, @RequestParam String param2) {
+    private String getWithMultipleQueryParam(@RequestParam String param1, @RequestParam @Valid String param2) {
         return String.format("getWithMultipleQueryParam - %s; %s", param1, param2);
     }
 
@@ -57,8 +65,19 @@ public class TestRestExportClass {
 
     @RestExport
     @GetMapping(path = "/{pathVariable}")
-    private String getWithPathVariableAndMultipleQueryParam(@PathVariable String pathVariable, @RequestParam String param1, @RequestParam String param2) {
+    private String getWithPathVariableAndMultipleQueryParam(@PathVariable String pathVariable, @RequestParam(name = "customName") String param1, @RequestParam String param2) {
         return String.format("getWithPathVariableAndOneQueryParam - pathVariable: %s; param1 - %s; param2 - %s", pathVariable, param1, param2);
     }
+
+    @RestExport
+    @GetMapping(path = "/{customNamePathVariable}{pathVariable2}")
+    private String getWithMultiplePathVariablesAndMultipleQueryParam(@PathVariable(name = "customNamePathVariable") String pathVariable1, @PathVariable String pathVariable2, @RequestParam(name = "customQueryParameterName") String param1, @RequestParam String param2) {
+        return String.format("getWithPathVariableAndOneQueryParam - pathVariable1: %s; pathVariable2: %s; param1 - %s; param2 - %s", pathVariable1, pathVariable2, param1, param2);
+    }
+
+//    @GetMapping()
+//    private String request(@RequestParam String string){
+//        return string;
+//    }
 
 }

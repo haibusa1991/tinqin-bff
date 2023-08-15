@@ -11,6 +11,7 @@ import java.lang.reflect.Parameter;
 @Getter
 public class RequestMappingData {
 
+    private String classRequestMappingPath;
     private Class<?> returnType;
     private String methodName;
     private RequestMapping requestMapping;

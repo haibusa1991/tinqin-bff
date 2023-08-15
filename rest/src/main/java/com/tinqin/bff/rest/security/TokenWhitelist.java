@@ -13,7 +13,9 @@ public enum TokenWhitelist {
             "/webjars/**",
             "/swagger-ui.html",
             "/items",
-            "/items/**"
+            "/items/**",
+            "/test",
+            "/test/**"
 
     }),
 

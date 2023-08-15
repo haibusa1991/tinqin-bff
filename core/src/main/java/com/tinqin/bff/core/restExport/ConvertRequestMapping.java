@@ -5,9 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 
-public class GetRequestMapping {
+public class ConvertRequestMapping {
 
     public static RequestMapping from(Annotation requestMappingAlias){
 
@@ -16,7 +15,7 @@ public class GetRequestMapping {
                 return (RequestMapping) requestMappingAlias;
             }
             case "org.springframework.web.bind.annotation.GetMapping" -> {
-                return GetRequestMapping.fromGetMapping((GetMapping) requestMappingAlias);
+                return ConvertRequestMapping.fromGetMapping((GetMapping) requestMappingAlias);
             }
             default -> throw new RuntimeException("Not a RequestMapping alias!");
         }
