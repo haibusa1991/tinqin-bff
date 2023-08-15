@@ -1,5 +1,5 @@
 package com.tinqin.bff.core.restExport;
 
-public enum MethodAnnotation {
+public enum ControllerHttpMethod {
     GET,POST,PUT,PATCH,DELETE
 }
