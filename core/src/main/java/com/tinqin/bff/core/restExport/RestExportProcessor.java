@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -86,10 +88,17 @@ public class RestExportProcessor {
                 .map(e -> e.length > 0 ? e[0] : "")
                 .orElse("");
 
+        Class<?> returnType = method.getReturnType();
+
+        try {
+            returnType = Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName());
+        } catch (Exception ignored) {
+        }
+
         System.out.println();
         return RequestMappingData.builder()
                 .classRequestMappingPath(classRequestMappingPath)
-                .returnType(method.getReturnType())
+                .returnType(returnType)
                 .methodName(method.getName())
                 .requestMapping(this.getRequestMappingAnnotation(method))
                 .parameterAnnotations(method.getParameterAnnotations())

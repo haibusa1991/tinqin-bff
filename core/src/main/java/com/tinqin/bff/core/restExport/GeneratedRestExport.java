@@ -3,7 +3,6 @@ package com.tinqin.bff.core.restExport;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
-import org.springframework.http.ResponseEntity;
 
 @Headers({
     "Content-Type: application/json"
@@ -14,7 +13,7 @@ public interface GeneratedRestExport {
     String simpleGet();
 
     @RequestLine("GET /test")
-    ResponseEntity responseEntityGet();
+    String responseEntityGet();
 
     @RequestLine("GET /test/subpath")
     String getWithSubPath();
