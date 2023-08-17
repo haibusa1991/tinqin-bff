@@ -11,29 +11,26 @@ LIMITATIONS:
 import com.google.auto.service.AutoService;
 import com.helger.jcodemodel.JCodeModelException;
 import com.tinqin.bff.restexportprocessor.annotation.RestExport;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-//@Component
 @RequiredArgsConstructor
 @AutoService(Processor.class)
 @SupportedAnnotationTypes("com.tinqin.bff.restexportprocessor.annotation.RestExport")
@@ -41,112 +38,66 @@ import java.util.stream.Stream;
 public class RestExportProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        System.out.println("111111111111111111111111111111\nINITING\n111111111111111111111111111111");
-        Element element = roundEnv.getElementsAnnotatedWith(RestExport.class).stream().findFirst().get();
-//        roundEnv.getElementsAnnotatedWith(RestExport.class).stream().findFirst().get().getEnclosingElement().getAnnotation(RequestMapping.class).path()
-//        Set<? extends Element> elementsAnnotatedWith = roundEnv.getElementsAnnotatedWith(RestExport.class);
-//        roundEnv.getElementsAnnotatedWith(RestExport.class).stream().findFirst().get()
+//        System.out.println("111111111111111111111111111111\nINITING\n111111111111111111111111111111");
+        Set<? extends Element> elementsAnnotatedWith = roundEnv.getElementsAnnotatedWith(RestExport.class);
+
+        if(elementsAnnotatedWith.isEmpty()){
+            return true;
+        }
+        try {
+
+            List<RequestMappingData> requestMappingData = elementsAnnotatedWith.stream()
+                    .map(this::generateMappingData)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            RestExportGenerator generator = new RestExportGenerator();
+
+            try {
+                generator.generate(requestMappingData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 
-    private Optional<RequestMappingData> generateMappingDataFromSymbol(Element element) {
-        if (!isInController.test(element)) {
-            return Optional.empty();
+    private RequestMappingData generateMappingData(Element element) {
+        if (!isInController(element)) {
+            return null;
         }
 
-        element.getEnclosingElement().getAnnotation(RequestMapping)
-
-        RequestMappingData build = RequestMappingData.builder()
-                .classRequestMappingPath(e.getEnclosingElement().getAnnotation())
-                .returnType()
-                .methodName()
-                .requestMapping()
-                .parameterAnnotations()
-                .parameters()
-                .build();
-    }
-
-    Predicate<Element> isInController = e -> {
-        Optional<Controller> controller = Optional.ofNullable(e.getEnclosingElement().getAnnotation(Controller.class));
-        Optional<RestController> restController = Optional.ofNullable(e.getEnclosingElement().getAnnotation(RestController.class));
-
-        return controller.isPresent() || restController.isPresent();
-    };
-
-    public void findAnnotations() throws JCodeModelException {
-        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
-
-//        String beanClassName = scanner.findCandidateComponents("com.tinqin.bff")
-//                .stream()
-//                .map(BeanDefinition::getBeanClassName)
-//                .filter(className -> className.contains("Voucher")) //todo find all controllers
-//                .findFirst()
-//                .orElseThrow();
-//
-        Class<?> testClass;
+        String[] path = element.getEnclosingElement().getAnnotation(RequestMapping.class).path();
+        Class<?> returnType = null; //TODO handle generics
         try {
-            testClass = Class.forName(
-                    scanner.findCandidateComponents("com.tinqin.bff")
-                            .stream()
-                            .map(BeanDefinition::getBeanClassName)
-                            .filter(className -> className.toLowerCase().contains("test"))
-                            .findFirst()
-                            .orElseThrow());
-        } catch (Exception e) {
-            throw new RuntimeException("Fix me: Test class not present");
-        }
-
-
-        List<RequestMappingData> controllerAnnotations = this.getAnnotatedMethods(testClass)
-                .stream()
-                .sorted(Comparator.comparing(Method::getName).reversed())
-                .map(this::getRequestMappingData)
-                .toList();
-
-        RestExportGenerator generator = new RestExportGenerator();
-
-        try {
-            generator.generate(controllerAnnotations);
-        } catch (IOException e) {
+            returnType = Class.forName(((ExecutableElement) element).getReturnType().toString());
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+        String methodName = element.getSimpleName().toString();
+        RequestMapping requestMapping = getRequestMappingAnnotation(element);
+        List<MirrorParameter> mirrorParameters = ((ExecutableElement) element).getParameters().stream().map(this::getMirrorParameter).toList();
 
-        System.out.println();
-    }
-
-    private RequestMappingData getRequestMappingData(Method method) {
-        String classRequestMappingPath = Stream.of(method.getDeclaringClass().getDeclaredAnnotations())
-                .filter(e -> e.annotationType().equals(RequestMapping.class))
-                .findFirst()
-                .map(e -> (RequestMapping) e)
-                .map(RequestMapping::path)
-                .map(e -> e.length > 0 ? e[0] : "")
-                .orElse("");
-
-        Class<?> returnType = method.getReturnType();
-
-        if (method.getGenericReturnType() instanceof ParameterizedType) {
-            try {
-                returnType = Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName());
-            } catch (Exception ignored) {
-
-            }
-        }
-
-
-        System.out.println();
         return RequestMappingData.builder()
-                .classRequestMappingPath(classRequestMappingPath)
+                .classRequestMappingPath(path.length > 0 ? path[0] : "")
                 .returnType(returnType)
-                .methodName(method.getName())
-                .requestMapping(this.getRequestMappingAnnotation(method))
-                .parameterAnnotations(method.getParameterAnnotations())
-                .parameters(method.getParameters())
+                .methodName(methodName)
+                .requestMapping(requestMapping)
+                .mirrorParameters(mirrorParameters)
                 .build();
     }
 
-    private RequestMapping getRequestMappingAnnotation(Method method) {
+    private Boolean isInController(Element element) {
+        Optional<Controller> controller = Optional.ofNullable(element.getEnclosingElement().getAnnotation(Controller.class));
+        Optional<RestController> restController = Optional.ofNullable(element.getEnclosingElement().getAnnotation(RestController.class));
+
+        return controller.isPresent() || restController.isPresent();
+    }
+
+    private RequestMapping getRequestMappingAnnotation(Element element) {
         List<Class<? extends Annotation>> requestMappings = List.of(
                 GetMapping.class,
                 PostMapping.class,
@@ -156,19 +107,35 @@ public class RestExportProcessor extends AbstractProcessor {
                 RequestMapping.class
         );
 
-        Annotation annotation = Arrays.stream(method.getDeclaredAnnotations()).filter(e ->
-                        requestMappings.contains(e.annotationType()))
+        Annotation annotation = requestMappings.stream()
+                .map(element::getAnnotation)
+                .filter(Objects::nonNull)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No annotation of type RequestMapping or its aliases is present."));
 
         return ConvertRequestMapping.from(annotation);
     }
 
-    private List<Method> getAnnotatedMethods(Class<?> c) {
+    public MirrorParameter getMirrorParameter(VariableElement element) {
+        String name = element.getSimpleName().toString();
+        Class<?> parameterType = null;
+        try {
+            parameterType = Class.forName(element.asType().toString());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        Annotation annotation = Stream.of(element.getAnnotation(RequestBody.class),
+                        element.getAnnotation(PathVariable.class),
+                        element.getAnnotation(RequestParam.class))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Unannotated parameter in controller signature."));
 
-        return Arrays.stream(c.getDeclaredMethods())
-                .filter(e -> Arrays.stream(e.getDeclaredAnnotations())
-                        .anyMatch(a -> a.annotationType().equals(RestExport.class)))
-                .toList();
+        return MirrorParameter.builder()
+                .name(name)
+                .parameterType(parameterType)
+                .annotation(annotation)
+                .build();
     }
+
 }

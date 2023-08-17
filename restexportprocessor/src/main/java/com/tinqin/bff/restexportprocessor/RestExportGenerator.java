@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.List;
 
 public class RestExportGenerator {
 
@@ -19,67 +18,68 @@ public class RestExportGenerator {
         this.process(methodList);
     }
 
-    private void process(List<RequestMappingData> RestExportAnnotatedMethods) throws JCodeModelException, IOException {
+    private void process(List<RequestMappingData> restExportAnnotatedMethods) throws JCodeModelException, IOException {
         JCodeModel jcm = new JCodeModel();
 
-        JDefinedClass clazz = jcm._class("com.tinqin.bff.core.restExport.GeneratedRestExport", EClassType.INTERFACE);
+        JDefinedClass clazz = jcm._class("com.tinqin.bff.restexport.RestExport", EClassType.INTERFACE);
         clazz.annotate(feign.Headers.class).paramArray("value", "Content-Type: application/json"); //hardcoded
 
-        RestExportAnnotatedMethods.forEach(e -> this.addMethod(clazz, e));
+        restExportAnnotatedMethods.forEach(e -> this.addMethod(clazz, e));
+
 
         JCMWriter writer = new JCMWriter(jcm);
-        writer.build(new File("core/src/main/java"));
-        System.out.println();
+        writer.build(new File("restexportprocessor/src/main/java"));
     }
 
     private void addMethod(JDefinedClass c, RequestMappingData mappingData) {
-        RequestLineBuilder requestLineBuilder = RequestLineBuilder.builder().mappingData(mappingData).build();
-        AnnotationHelper annotationHelper = AnnotationHelper.builder()
-                .annotations(mappingData.getParameterAnnotations())
-                .parameters(mappingData.getParameters())
-                .build();
+        RequestLineBuilder requestLineBuilder =new RequestLineBuilder(mappingData);
+        requestLineBuilder.getRequestLine();
 
         JMethod method = c.method(JMod.NONE, mappingData.getReturnType(), mappingData.getMethodName());
 
         method.annotate(RequestLine.class).param("value", requestLineBuilder.getRequestLine());
 
-        annotationHelper.getPathVariables().forEach(e -> this.addPathVariableParameterToMethod(method, e));
-        annotationHelper.getRequestParams().forEach(e -> this.addQueryVariableParameterToMethod(method, e));
-        annotationHelper.getRequestBody().forEach(e -> this.addRequestBodyParameterToMethod(method, e));
+
+        mappingData.getMirrorParameters()
+                .stream()
+                .filter(e-> e.getAnnotation().annotationType().equals(PathVariable.class))
+                .forEach(e->this.addPathVariableParameterToMethod(method,e));
+
+        mappingData.getMirrorParameters()
+                .stream()
+                .filter(e-> e.getAnnotation().annotationType().equals(RequestParam.class))
+                .forEach(e->this.addRequestParamParameterToMethod(method,e));
+
+        mappingData.getMirrorParameters()
+                .stream()
+                .filter(e-> e.getAnnotation().annotationType().equals(RequestBody.class))
+                .forEach(e->this.addRequestBodyParameterToMethod(method,e));
     }
 
-    private void addPathVariableParameterToMethod(JMethod method, BiTuple<Parameter, PathVariable> pathVariables) {
-        Parameter parameter = pathVariables.getFirstElement();
-        PathVariable pathVariable = pathVariables.getSecondElement();
+    private void addPathVariableParameterToMethod(JMethod method, MirrorParameter mirrorParameter) {
+        String parameterName = ((PathVariable) mirrorParameter.getAnnotation()).name().isEmpty()
+                ? mirrorParameter.getName()
+                : ((PathVariable) mirrorParameter.getAnnotation()).name();
 
-        String parameterName = pathVariable.name().isEmpty()
-                ? parameter.getName()
-                : pathVariable.name();
-
-        method.param(parameter.getType(), parameterName)
+        method.param(mirrorParameter.getParameterType(), parameterName)
                 .annotate(Param.class)
                 .param("value", parameterName);
     }
 
-    private void addQueryVariableParameterToMethod(JMethod method, BiTuple<Parameter, RequestParam> paramVariable) {
 
-        Parameter parameter = paramVariable.getFirstElement();
-        RequestParam pathVariable = paramVariable.getSecondElement();
+    private void addRequestParamParameterToMethod(JMethod method, MirrorParameter mirrorParameter) {
+        String parameterName = ((RequestParam) mirrorParameter.getAnnotation()).name().isEmpty()
+                ? mirrorParameter.getName()
+                : ((RequestParam) mirrorParameter.getAnnotation()).name();
 
-        String parameterName = pathVariable.name().isEmpty()
-                ? parameter.getName()
-                : pathVariable.name();
-
-        method.param(parameter.getType(), parameterName)
+        method.param(mirrorParameter.getParameterType(), mirrorParameter.getName())
                 .annotate(Param.class)
-                .param("value", parameter.getName());
+                .param("value", parameterName);
     }
 
-    private void addRequestBodyParameterToMethod(JMethod method, BiTuple<Parameter, RequestBody> paramVariable) {
 
-        Parameter parameter = paramVariable.getFirstElement();
-
-        method.param(parameter.getType(), parameter.getName())
+    private void addRequestBodyParameterToMethod(JMethod method,  MirrorParameter mirrorParameter) {
+        method.param(mirrorParameter.getParameterType(), mirrorParameter.getName())
                 .annotate(Param.class);
     }
 

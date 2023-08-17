@@ -3,3 +3,6 @@
 /api/target/
 /domain/target/
 /rest/target/
+/restexportprocessor/src/main/java/com/tinqin/bff/restexport/RestExport.java
+/persistence/target/
+/restexportprocessor/target/

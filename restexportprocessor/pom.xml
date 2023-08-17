@@ -36,13 +36,13 @@
                     <goal>compile</goal>
                 </goals>
                 <configuration>
-                    <annotationProcessorPaths>
-                        <processorPath>
-                            <groupId>com.tinqin.bff</groupId>
-                            <artifactId>restexportprocessor</artifactId>
-                            <version>${revision}</version>
-                        </processorPath>
-                    </annotationProcessorPaths>
+<!--                    <annotationProcessorPaths>-->
+<!--                        <processorPath>-->
+<!--                            <groupId>com.tinqin.bff</groupId>-->
+<!--                            <artifactId>restexportprocessor</artifactId>-->
+<!--                            <version>${revision}</version>-->
+<!--                        </processorPath>-->
+<!--                    </annotationProcessorPaths>-->
                     <failOnError>true</failOnError>
                     <showWarnings>true</showWarnings>
                 </configuration>
