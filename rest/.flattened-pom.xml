@@ -31,8 +31,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.tinqin.restexport</groupId>
-      <artifactId>rest-export-generator</artifactId>
+      <groupId>com.tinqin.bff</groupId>
+      <artifactId>restexportprocessor</artifactId>
       <version>0.0.2-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
@@ -67,7 +67,7 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>8.0.1.Final</version>
       <scope>compile</scope>

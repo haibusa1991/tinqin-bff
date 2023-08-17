@@ -1,4 +1,4 @@
-package com.tinqin.bff.core.restExport;
+package com.tinqin.bff.restexportprocessor;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;

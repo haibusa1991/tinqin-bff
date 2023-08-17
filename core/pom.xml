@@ -14,19 +14,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>api</artifactId>
             <version>${revision}</version>
         </dependency>
 
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>persistence</artifactId>
             <version>${revision}</version>
         </dependency>
 
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>domain</artifactId>
             <version>${revision}</version>
         </dependency>
@@ -37,10 +37,5 @@
             <version>0.9.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.helger</groupId>
-            <artifactId>jcodemodel</artifactId>
-            <version>3.4.0</version>
-        </dependency>
     </dependencies>
 </project>

@@ -1,6 +1,6 @@
 package com.tinqin.bff.rest.controller;
 
-import com.tinqin.bff.api.annotations.RestExport;
+import com.tinqin.bff.restexportprocessor.annotation.RestExport;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.zip.ZipEntry;

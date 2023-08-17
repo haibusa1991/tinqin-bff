@@ -1,4 +1,4 @@
-package com.tinqin.bff.core.restExport;
+package com.tinqin.bff.restexportprocessor;
 /*
 GENERAL NOTES
 LIMITATIONS:
@@ -8,8 +8,9 @@ LIMITATIONS:
    yield "/path1"
 */
 
+import com.google.auto.service.AutoService;
 import com.helger.jcodemodel.JCodeModelException;
-import com.tinqin.bff.api.annotations.RestExport;
+import com.tinqin.bff.restexportprocessor.annotation.RestExport;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -20,20 +21,58 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.processing.*;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 //@Component
 @RequiredArgsConstructor
-public class RestExportProcessor {
-    private final ApplicationContext applicationContext;
+@AutoService(Processor.class)
+@SupportedAnnotationTypes("com.tinqin.bff.restexportprocessor.annotation.RestExport")
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
+public class RestExportProcessor extends AbstractProcessor {
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        System.out.println("111111111111111111111111111111\nINITING\n111111111111111111111111111111");
+        Element element = roundEnv.getElementsAnnotatedWith(RestExport.class).stream().findFirst().get();
+//        roundEnv.getElementsAnnotatedWith(RestExport.class).stream().findFirst().get().getEnclosingElement().getAnnotation(RequestMapping.class).path()
+//        Set<? extends Element> elementsAnnotatedWith = roundEnv.getElementsAnnotatedWith(RestExport.class);
+//        roundEnv.getElementsAnnotatedWith(RestExport.class).stream().findFirst().get()
+        return true;
+    }
 
-    @PostConstruct
+    private Optional<RequestMappingData> generateMappingDataFromSymbol(Element element) {
+        if (!isInController.test(element)) {
+            return Optional.empty();
+        }
+
+        element.getEnclosingElement().getAnnotation(RequestMapping)
+
+        RequestMappingData build = RequestMappingData.builder()
+                .classRequestMappingPath(e.getEnclosingElement().getAnnotation())
+                .returnType()
+                .methodName()
+                .requestMapping()
+                .parameterAnnotations()
+                .parameters()
+                .build();
+    }
+
+    Predicate<Element> isInController = e -> {
+        Optional<Controller> controller = Optional.ofNullable(e.getEnclosingElement().getAnnotation(Controller.class));
+        Optional<RestController> restController = Optional.ofNullable(e.getEnclosingElement().getAnnotation(RestController.class));
+
+        return controller.isPresent() || restController.isPresent();
+    };
+
     public void findAnnotations() throws JCodeModelException {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));

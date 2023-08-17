@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.tinqin.bff</groupId>
+        <artifactId>bff</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>restexportprocessor</artifactId>
+    <version>${revision}</version>
+    <name>rest-export-processor</name>
+    <description>rest-export-processor</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.helger</groupId>
+            <artifactId>jcodemodel</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <goals>
+                    <goal>compile</goal>
+                </goals>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <processorPath>
+                            <groupId>com.tinqin.bff</groupId>
+                            <artifactId>restexportprocessor</artifactId>
+                            <version>${revision}</version>
+                        </processorPath>
+                    </annotationProcessorPaths>
+                    <failOnError>true</failOnError>
+                    <showWarnings>true</showWarnings>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

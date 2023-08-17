@@ -1,6 +1,5 @@
 package com.tinqin.bff.rest.controller;
 
-import com.tinqin.bff.api.annotations.RestExport;
 import com.tinqin.bff.api.operation.voucher.activate.ActivateVoucherInput;
 import com.tinqin.bff.api.operation.voucher.activate.ActivateVoucherOperation;
 import com.tinqin.bff.api.operation.voucher.activate.ActivateVoucherResult;
@@ -22,7 +21,6 @@ public class VoucherController {
     private final ActivateVoucherOperation activateVoucher;
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @RestExport
     @ApiResponse(responseCode = "200", description = "Voucher activated successfully.")
     @ApiResponse(responseCode = "400", description = "Voucher is used or expired.")
     @ApiResponse(responseCode = "403", description = "JWT is invalid.")

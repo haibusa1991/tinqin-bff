@@ -1,4 +1,4 @@
-package com.tinqin.bff.api.annotations;
+package com.tinqin.bff.restexportprocessor.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

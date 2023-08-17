@@ -1,4 +1,4 @@
-package com.tinqin.bff.core.restExport;
+package com.tinqin.bff.restexportprocessor;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
