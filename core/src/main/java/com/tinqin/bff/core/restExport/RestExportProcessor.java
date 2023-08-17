@@ -4,9 +4,7 @@ GENERAL NOTES
 LIMITATIONS:
    1. Class level annotation @RequestMapping returns the first path only. @RequestMapping(path = {"/path1", "/path2"}) will
    yield "/path1"
-
-   2. Method level annotation @RequestMapping not supported, only and its aliases(GET, POST, PATCH, PUT, DELETE).
-   3. @RequestMapping aliases(GET, POST, PATCH, PUT, DELETE) return the first path only. e.g. @GetMapping(path = {"/path1", "/path2"}) will
+   2. @RequestMapping aliases(GET, POST, PATCH, PUT, DELETE) return the first path only. e.g. @GetMapping(path = {"/path1", "/path2"}) will
    yield "/path1"
 */
 
@@ -30,11 +28,10 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Stream;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class RestExportProcessor {
     private final ApplicationContext applicationContext;
-
 
     @PostConstruct
     public void findAnnotations() throws JCodeModelException {
@@ -90,10 +87,14 @@ public class RestExportProcessor {
 
         Class<?> returnType = method.getReturnType();
 
-        try {
-            returnType = Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName());
-        } catch (Exception ignored) {
+        if (method.getGenericReturnType() instanceof ParameterizedType) {
+            try {
+                returnType = Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].getTypeName());
+            } catch (Exception ignored) {
+
+            }
         }
+
 
         System.out.println();
         return RequestMappingData.builder()

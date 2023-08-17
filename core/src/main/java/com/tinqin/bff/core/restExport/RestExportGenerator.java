@@ -5,14 +5,13 @@ import com.helger.jcodemodel.writer.JCMWriter;
 import feign.Param;
 import feign.RequestLine;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RestExportGenerator {
 
@@ -32,7 +31,6 @@ public class RestExportGenerator {
         writer.build(new File("core/src/main/java"));
         System.out.println();
     }
-    //@RequestBody
 
     private void addMethod(JDefinedClass c, RequestMappingData mappingData) {
         RequestLineBuilder requestLineBuilder = RequestLineBuilder.builder().mappingData(mappingData).build();
@@ -47,6 +45,7 @@ public class RestExportGenerator {
 
         annotationHelper.getPathVariables().forEach(e -> this.addPathVariableParameterToMethod(method, e));
         annotationHelper.getRequestParams().forEach(e -> this.addQueryVariableParameterToMethod(method, e));
+        annotationHelper.getRequestBody().forEach(e -> this.addRequestBodyParameterToMethod(method, e));
     }
 
     private void addPathVariableParameterToMethod(JMethod method, BiTuple<Parameter, PathVariable> pathVariables) {
@@ -74,6 +73,14 @@ public class RestExportGenerator {
         method.param(parameter.getType(), parameterName)
                 .annotate(Param.class)
                 .param("value", parameter.getName());
+    }
+
+    private void addRequestBodyParameterToMethod(JMethod method, BiTuple<Parameter, RequestBody> paramVariable) {
+
+        Parameter parameter = paramVariable.getFirstElement();
+
+        method.param(parameter.getType(), parameter.getName())
+                .annotate(Param.class);
     }
 
 

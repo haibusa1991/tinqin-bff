@@ -31,6 +31,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.tinqin.restexport</groupId>
+      <artifactId>rest-export-generator</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.28</version>
