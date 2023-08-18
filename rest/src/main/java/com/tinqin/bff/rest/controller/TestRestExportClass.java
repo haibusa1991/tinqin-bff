@@ -1,6 +1,7 @@
 package com.tinqin.bff.rest.controller;
 
 import com.tinqin.bff.restexportprocessor.annotation.RestExport;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.zip.ZipEntry;
@@ -9,16 +10,16 @@ import java.util.zip.ZipEntry;
 @RequestMapping(path = "/test")
 public class TestRestExportClass {
 
-//    @GetMapping
-//    private String unannotatedMethod() {
-//        return "unannotated get";
-//    }
-//
-//    @RestExport
-//    @GetMapping
-//    private ResponseEntity<String> responseEntityGet() {
-//        return ResponseEntity.ok("ResponseEntity Get");
-//    }
+    @GetMapping(path = "/unannotated")
+    private String unannotatedMethod() {
+        return "unannotated get";
+    }
+
+    @RestExport
+    @GetMapping(path = "/response-entity")
+    private ResponseEntity<String> responseEntityGet() {
+        return ResponseEntity.ok("ResponseEntity Get");
+    }
 
 //    @RestExport
 //    @RequestMapping(method = RequestMethod.POST)
@@ -74,11 +75,6 @@ public class TestRestExportClass {
     private String getWithMultiplePathVariablesAndMultipleQueryParam(@PathVariable(name = "customNamePathVariable") String pathVariable1, @PathVariable String pathVariable2, @RequestParam(name = "customQueryParameterName") String param1, @RequestParam String param2) {
         return String.format("getWithPathVariableAndOneQueryParam - pathVariable1: %s; pathVariable2: %s; param1 - %s; param2 - %s", pathVariable1, pathVariable2, param1, param2);
     }
-
-//    @GetMapping()
-//    private String request(@RequestParam String string){
-//        return string;
-//    }
 
     @RestExport
     @PostMapping(path = "/{customNamePathVariable}{pathVariable2}")

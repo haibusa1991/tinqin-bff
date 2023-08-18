@@ -9,13 +9,8 @@ LIMITATIONS:
 */
 
 import com.google.auto.service.AutoService;
-import com.helger.jcodemodel.JCodeModelException;
 import com.tinqin.bff.restexportprocessor.annotation.RestExport;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,10 +20,13 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import java.io.IOException;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -36,30 +34,26 @@ import java.util.stream.Stream;
 @SupportedAnnotationTypes("com.tinqin.bff.restexportprocessor.annotation.RestExport")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class RestExportProcessor extends AbstractProcessor {
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-//        System.out.println("111111111111111111111111111111\nINITING\n111111111111111111111111111111");
-        Set<? extends Element> elementsAnnotatedWith = roundEnv.getElementsAnnotatedWith(RestExport.class);
+        Set<? extends Element> annotatedMethod = roundEnv.getElementsAnnotatedWith(RestExport.class);
 
-        if(elementsAnnotatedWith.isEmpty()){
+        if (annotatedMethod.isEmpty()) {
             return true;
         }
+
+        List<RequestMappingData> requestMappingData = annotatedMethod.stream()
+                .map(this::generateMappingData)
+                .filter(Objects::nonNull)
+                .toList();
+
+        RestExportGenerator generator = new RestExportGenerator(requestMappingData);
+
         try {
-
-            List<RequestMappingData> requestMappingData = elementsAnnotatedWith.stream()
-                    .map(this::generateMappingData)
-                    .filter(Objects::nonNull)
-                    .toList();
-
-            RestExportGenerator generator = new RestExportGenerator();
-
-            try {
-                generator.generate(requestMappingData);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            generator.generate();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return true;
@@ -71,21 +65,30 @@ public class RestExportProcessor extends AbstractProcessor {
         }
 
         String[] path = element.getEnclosingElement().getAnnotation(RequestMapping.class).path();
-        Class<?> returnType = null; //TODO handle generics
+        Class<?> returnTypeClass;
+
+        TypeMirror returnType = ((ExecutableElement) element).getReturnType();
+
+        String targetClassName = returnType.toString();
+
+        Optional<? extends TypeMirror> genericClass = ((DeclaredType) returnType)
+                .getTypeArguments()
+                .stream()
+                .findFirst();
+
         try {
-            returnType = Class.forName(((ExecutableElement) element).getReturnType().toString());
+            returnTypeClass = Class.forName(genericClass.isEmpty() ? targetClassName : genericClass.get().toString());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         String methodName = element.getSimpleName().toString();
-        RequestMapping requestMapping = getRequestMappingAnnotation(element);
         List<MirrorParameter> mirrorParameters = ((ExecutableElement) element).getParameters().stream().map(this::getMirrorParameter).toList();
 
         return RequestMappingData.builder()
                 .classRequestMappingPath(path.length > 0 ? path[0] : "")
-                .returnType(returnType)
+                .returnType(returnTypeClass)
                 .methodName(methodName)
-                .requestMapping(requestMapping)
+                .requestMapping(ConvertRequestMapping.from(element))
                 .mirrorParameters(mirrorParameters)
                 .build();
     }
@@ -97,33 +100,15 @@ public class RestExportProcessor extends AbstractProcessor {
         return controller.isPresent() || restController.isPresent();
     }
 
-    private RequestMapping getRequestMappingAnnotation(Element element) {
-        List<Class<? extends Annotation>> requestMappings = List.of(
-                GetMapping.class,
-                PostMapping.class,
-                PutMapping.class,
-                PatchMapping.class,
-                DeleteMapping.class,
-                RequestMapping.class
-        );
-
-        Annotation annotation = requestMappings.stream()
-                .map(element::getAnnotation)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No annotation of type RequestMapping or its aliases is present."));
-
-        return ConvertRequestMapping.from(annotation);
-    }
-
     public MirrorParameter getMirrorParameter(VariableElement element) {
-        String name = element.getSimpleName().toString();
-        Class<?> parameterType = null;
+
+        Class<?> parameterType;
         try {
             parameterType = Class.forName(element.asType().toString());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
         Annotation annotation = Stream.of(element.getAnnotation(RequestBody.class),
                         element.getAnnotation(PathVariable.class),
                         element.getAnnotation(RequestParam.class))
@@ -132,7 +117,7 @@ public class RestExportProcessor extends AbstractProcessor {
                 .orElseThrow(() -> new RuntimeException("Unannotated parameter in controller signature."));
 
         return MirrorParameter.builder()
-                .name(name)
+                .name(element.getSimpleName().toString())
                 .parameterType(parameterType)
                 .annotation(annotation)
                 .build();

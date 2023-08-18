@@ -1,11 +1,12 @@
 package com.tinqin.bff.restexportprocessor;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.NonNullApi;
 import org.springframework.web.bind.annotation.*;
 
+import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Objects;
 
 public class ConvertRequestMapping {
 
@@ -33,6 +34,25 @@ public class ConvertRequestMapping {
 
             default -> throw new RuntimeException("Not a RequestMapping alias!");
         }
+    }
+
+    public static RequestMapping from(Element element) {
+        List<Class<? extends Annotation>> requestMappings = List.of(
+                GetMapping.class,
+                PostMapping.class,
+                PutMapping.class,
+                PatchMapping.class,
+                DeleteMapping.class,
+                RequestMapping.class
+        );
+
+        Annotation annotation = requestMappings.stream()
+                .map(element::getAnnotation)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No annotation of type RequestMapping or its aliases is present."));
+
+        return ConvertRequestMapping.from(annotation);
     }
 
     private static RequestMapping fromGetMapping(GetMapping getMapping) {

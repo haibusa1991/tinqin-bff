@@ -13,26 +13,31 @@ import java.io.IOException;
 import java.util.List;
 
 public class RestExportGenerator {
+    private final List<RequestMappingData> methodList;
 
-    public void generate(List<RequestMappingData> methodList) throws IOException, JCodeModelException {
-        this.process(methodList);
+    public RestExportGenerator(List<RequestMappingData> methodList) {
+        this.methodList = methodList;
+    }
+
+    public void generate() throws IOException, JCodeModelException {
+        this.process(this.methodList);
     }
 
     private void process(List<RequestMappingData> restExportAnnotatedMethods) throws JCodeModelException, IOException {
         JCodeModel jcm = new JCodeModel();
 
-        JDefinedClass clazz = jcm._class("com.tinqin.bff.restexport.RestExport", EClassType.INTERFACE);
+        JDefinedClass clazz = jcm._class("com.tinqin.bff.rest.restexport.RestExport", EClassType.INTERFACE);
         clazz.annotate(feign.Headers.class).paramArray("value", "Content-Type: application/json"); //hardcoded
 
         restExportAnnotatedMethods.forEach(e -> this.addMethod(clazz, e));
 
 
         JCMWriter writer = new JCMWriter(jcm);
-        writer.build(new File("restexportprocessor/src/main/java"));
+        writer.build(new File("rest/src/main/java"));
     }
 
     private void addMethod(JDefinedClass c, RequestMappingData mappingData) {
-        RequestLineBuilder requestLineBuilder =new RequestLineBuilder(mappingData);
+        RequestLineBuilder requestLineBuilder = new RequestLineBuilder(mappingData);
         requestLineBuilder.getRequestLine();
 
         JMethod method = c.method(JMod.NONE, mappingData.getReturnType(), mappingData.getMethodName());
@@ -42,18 +47,18 @@ public class RestExportGenerator {
 
         mappingData.getMirrorParameters()
                 .stream()
-                .filter(e-> e.getAnnotation().annotationType().equals(PathVariable.class))
-                .forEach(e->this.addPathVariableParameterToMethod(method,e));
+                .filter(e -> e.getAnnotation().annotationType().equals(PathVariable.class))
+                .forEach(e -> this.addPathVariableParameterToMethod(method, e));
 
         mappingData.getMirrorParameters()
                 .stream()
-                .filter(e-> e.getAnnotation().annotationType().equals(RequestParam.class))
-                .forEach(e->this.addRequestParamParameterToMethod(method,e));
+                .filter(e -> e.getAnnotation().annotationType().equals(RequestParam.class))
+                .forEach(e -> this.addRequestParamParameterToMethod(method, e));
 
         mappingData.getMirrorParameters()
                 .stream()
-                .filter(e-> e.getAnnotation().annotationType().equals(RequestBody.class))
-                .forEach(e->this.addRequestBodyParameterToMethod(method,e));
+                .filter(e -> e.getAnnotation().annotationType().equals(RequestBody.class))
+                .forEach(e -> this.addRequestBodyParameterToMethod(method, e));
     }
 
     private void addPathVariableParameterToMethod(JMethod method, MirrorParameter mirrorParameter) {
@@ -78,7 +83,7 @@ public class RestExportGenerator {
     }
 
 
-    private void addRequestBodyParameterToMethod(JMethod method,  MirrorParameter mirrorParameter) {
+    private void addRequestBodyParameterToMethod(JMethod method, MirrorParameter mirrorParameter) {
         method.param(mirrorParameter.getParameterType(), mirrorParameter.getName())
                 .annotate(Param.class);
     }

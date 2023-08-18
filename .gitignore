@@ -6,3 +6,4 @@
 /restexportprocessor/src/main/java/com/tinqin/bff/restexport/RestExport.java
 /persistence/target/
 /restexportprocessor/target/
+/rest/src/main/java/com/tinqin/bff/rest/restexport/RestExport.java
