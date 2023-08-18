@@ -104,7 +104,9 @@ public class RestExportProcessor extends AbstractProcessor {
 
         Class<?> parameterType;
         try {
-            parameterType = Class.forName(element.asType().toString());
+            String[] tokens = element.asType().toString().split("\\s+");
+
+            parameterType = Class.forName(tokens[tokens.length-1]);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

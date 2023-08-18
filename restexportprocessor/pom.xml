@@ -46,6 +46,14 @@
                     <failOnError>true</failOnError>
                     <showWarnings>true</showWarnings>
                 </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>com.tinqin.bff</groupId>
+                        <artifactId>api</artifactId>
+                        <version>0.0.2-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
