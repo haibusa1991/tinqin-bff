@@ -1,0 +1,50 @@
+services:
+  mysql:
+    container_name: mysqlserver
+    image: mysql:latest
+    restart: unless-stopped
+    env_file:
+      - /.env
+    volumes:
+      - mysqlserver:/var/lib/mysqlserver
+    ports:
+      - "${MYSQL_SERVER_EXTERNAL_PORT}:${ZOOSTORE_PORT}"
+
+  zoostore:
+    container_name: zoostore
+    image: zoostore:latest
+    restart: unless-stopped
+    env_file:
+      - /.env
+    ports:
+      - "${ZOOSTORE_PORT}:${ZOOSTORE_PORT}"
+    depends_on:
+      - mysql
+
+  bff:
+    container_name: bff
+    image: bff:latest
+    restart: unless-stopped
+    env_file:
+      - /.env
+    ports:
+      - "${BFF_PORT}:${BFF_PORT}"
+    depends_on:
+      - mysql
+      - zoostore
+      - storage
+
+  storage:
+    container_name: storage
+    image: storage:latest
+    restart: unless-stopped
+    env_file:
+      - /.env
+    ports:
+      - "${STORAGE_PORT}:${STORAGE_PORT}"
+    depends_on:
+      - mysql
+
+volumes:
+  mysqlserver:
+

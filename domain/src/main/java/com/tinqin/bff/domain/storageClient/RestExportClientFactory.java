@@ -9,6 +9,7 @@ import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,16 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class RestExportClientFactory {
     private final ApplicationContext context;
 
+    @Value("${STORAGE_CLIENT_NAME}")
+    private String storageClientName;
+    @Value("${STORAGE_PORT}")
+    private String storagePort;
+
+    @Value("${ZOOSTORE_CLIENT_NAME}")
+    private String zoostoreClientName;
+    @Value("${ZOOSTORE_PORT}")
+    private String zoostorePort;
+
     @Bean
     public ObjectMapper mapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -30,10 +41,11 @@ public class RestExportClientFactory {
 
     @Bean
     StorageItemRestExport getStorageClient() {
+
         return Feign.builder()
                 .encoder(new JacksonEncoder(context.getBean(ObjectMapper.class)))
                 .decoder(new JacksonDecoder(context.getBean(ObjectMapper.class)))
-                .target(StorageItemRestExport.class, "http://localhost:8081");
+                .target(StorageItemRestExport.class, String.format("http://%s:%s", storageClientName, storagePort));
     }
 
     @Bean
@@ -41,6 +53,6 @@ public class RestExportClientFactory {
         return Feign.builder()
                 .encoder(new JacksonEncoder(context.getBean(ObjectMapper.class)))
                 .decoder(new JacksonDecoder(context.getBean(ObjectMapper.class)))
-                .target(ZooStoreRestExport.class, "http://localhost:8080");
+                .target(ZooStoreRestExport.class, String.format("http://%s:%s", zoostoreClientName, zoostorePort));
     }
 }

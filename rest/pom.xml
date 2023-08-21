@@ -49,22 +49,22 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>com.tinqin.bff.rest.TinqinBffApplication.class</mainClass>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
+<!--                <configuration>-->
+<!--                    <mainClass>com.tinqin.bff.rest.TinqinBffApplication.class</mainClass>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>repackage</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
                 <dependencies>
-                    <dependency>
-                        <groupId>com.tinqin.bff</groupId>
-                        <artifactId>restexportprocessor</artifactId>
-                        <version>${revision}</version>
-                    </dependency>
+<!--                    <dependency>-->
+<!--                        <groupId>com.tinqin.bff</groupId>-->
+<!--                        <artifactId>restexportprocessor</artifactId>-->
+<!--                        <version>${revision}</version>-->
+<!--                    </dependency>-->
                 </dependencies>
             </plugin>
         </plugins>
