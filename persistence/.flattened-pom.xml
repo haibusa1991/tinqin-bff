@@ -25,8 +25,8 @@
       <scope>runtime</scope>
       <exclusions>
         <exclusion>
-          <groupId>com.google.protobuf</groupId>
           <artifactId>protobuf-java</artifactId>
+          <groupId>com.google.protobuf</groupId>
         </exclusion>
       </exclusions>
     </dependency>

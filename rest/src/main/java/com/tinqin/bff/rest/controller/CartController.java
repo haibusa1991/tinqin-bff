@@ -16,7 +16,7 @@ import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderInput;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderOperation;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResult;
 import com.tinqin.bff.core.processor.order.PlaceOrderOperationProcessor;
-import com.tinqin.bff.restexportprocessor.annotation.RestExport;
+import com.tinqin.restexport.annotation.RestExport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
