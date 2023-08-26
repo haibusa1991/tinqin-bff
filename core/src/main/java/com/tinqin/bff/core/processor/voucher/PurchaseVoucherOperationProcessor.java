@@ -5,7 +5,7 @@ import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherOperationInp
 import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherResult;
 import com.tinqin.bff.persistence.entity.Voucher;
 import com.tinqin.bff.persistence.repository.VoucherRepository;
-import com.tinqin.storage.restexport.StorageItemRestExport;
+import com.tinqin.storage.restexport.StorageRestExport;
 import com.tinqin.zoostore.api.operations.item.getItemById.GetItemByIdResult;
 import com.tinqin.zoostore.api.operations.item.getItemByPartialTitle.GetItemByPartialTitleResult;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 public class PurchaseVoucherOperationProcessor implements PurchaseVoucherOperation {
     private final VoucherRepository voucherRepository;
     private final ZooStoreRestExport zoostoreClient;
-    private final StorageItemRestExport storageClient;
+    private final StorageRestExport storageClient;
     private final Logger logger;
 
     //TODO mail trap research

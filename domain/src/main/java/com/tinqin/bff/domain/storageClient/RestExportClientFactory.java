@@ -2,8 +2,7 @@ package com.tinqin.bff.domain.storageClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.tinqin.storage.restexport.StorageItemRestExport;
+import com.tinqin.storage.restexport.StorageRestExport;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
 @RequiredArgsConstructor
@@ -40,12 +37,12 @@ public class RestExportClientFactory {
     }
 
     @Bean
-    StorageItemRestExport getStorageClient() {
+    StorageRestExport getStorageClient() {
 
         return Feign.builder()
                 .encoder(new JacksonEncoder(context.getBean(ObjectMapper.class)))
                 .decoder(new JacksonDecoder(context.getBean(ObjectMapper.class)))
-                .target(StorageItemRestExport.class, String.format("http://%s:%s", storageClientName, storagePort));
+                .target(StorageRestExport.class, String.format("http://%s:%s", storageClientName, storagePort));
     }
 
     @Bean

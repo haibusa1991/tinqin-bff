@@ -13,6 +13,7 @@
         <revision>0.0.2-SNAPSHOT</revision>
         <zoostore.version>0.0.8-SNAPSHOT</zoostore.version>
         <storage.version>0.0.8-SNAPSHOT</storage.version>
+        <rest-export-revision>0.0.2-SNAPSHOT</rest-export-revision>
         <java.version>17</java.version>
     </properties>
     <groupId>com.tinqin.bff</groupId>
@@ -82,7 +83,6 @@
         <module>domain</module>
         <module>persistence</module>
         <module>rest</module>
-        <module>restexportprocessor</module>
     </modules>
 
     <build>

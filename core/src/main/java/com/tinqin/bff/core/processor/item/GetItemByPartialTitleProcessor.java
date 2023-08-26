@@ -7,7 +7,7 @@ import com.tinqin.bff.core.exception.ServiceUnavailableException;
 import com.tinqin.bff.core.exception.StorageItemNotFoundException;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferenceIdSingleItem;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferencedIdResult;
-import com.tinqin.storage.restexport.StorageItemRestExport;
+import com.tinqin.storage.restexport.StorageRestExport;
 import com.tinqin.zoostore.api.operations.item.BaseEditItemResult;
 import com.tinqin.zoostore.api.operations.item.getItemByPartialTitle.GetItemByPartialTitleSingleItem;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
@@ -21,7 +21,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class GetItemByPartialTitleProcessor implements GetItemByPartialTitle {
     private final ZooStoreRestExport zoostoreClient;
-    private final StorageItemRestExport storageClient;
+    private final StorageRestExport storageClient;
 
     @Override
     public GetItemByPartialTitleResult process(GetItemByPartialTitleInput input) {

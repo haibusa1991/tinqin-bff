@@ -3,7 +3,6 @@ package com.tinqin.bff.core.processor.cart;
 import com.tinqin.bff.api.operation.cart.addCartItem.AddCartItemInput;
 import com.tinqin.bff.api.operation.cart.addCartItem.AddCartItemOperation;
 import com.tinqin.bff.api.operation.cart.addCartItem.AddCartItemResult;
-import com.tinqin.bff.core.exception.InsufficientItemQuantityException;
 import com.tinqin.bff.core.exception.ServiceUnavailableException;
 import com.tinqin.bff.core.exception.StoreItemNotFoundException;
 import com.tinqin.bff.persistence.entity.CartItem;
@@ -12,8 +11,7 @@ import com.tinqin.bff.persistence.repository.CartItemRepository;
 import com.tinqin.bff.persistence.repository.UserRepository;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferenceIdSingleItem;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferencedIdResult;
-import com.tinqin.storage.restexport.StorageItemRestExport;
-import com.tinqin.zoostore.api.operations.item.getItemById.GetItemByIdResult;
+import com.tinqin.storage.restexport.StorageRestExport;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AddCartItemOperationProcessor implements AddCartItemOperation {
-    private final StorageItemRestExport storageClient;
+    private final StorageRestExport storageClient;
     private final ZooStoreRestExport storeClient;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;

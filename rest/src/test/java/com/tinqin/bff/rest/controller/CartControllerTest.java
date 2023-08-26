@@ -11,17 +11,20 @@ import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResult;
 import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResultSingleItem;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferenceIdSingleItem;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferencedIdResult;
-import com.tinqin.storage.restexport.StorageItemRestExport;
+import com.tinqin.storage.restexport.StorageRestExport;
 import com.tinqin.zoostore.api.operations.item.getItemById.GetItemByIdResult;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
 import feign.FeignException;
 import feign.Request;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -41,6 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestPropertySource(locations= "classpath:application.yaml")
+@ExtendWith(SpringExtension.class)
 public class CartControllerTest {
 
     @Autowired
@@ -56,7 +61,7 @@ public class CartControllerTest {
     private ZooStoreRestExport zoostoreClient;
 
     @MockBean
-    private StorageItemRestExport storageClient;
+    private StorageRestExport storageClient;
 
     @MockBean
     private PurchaseVoucherOperation purchaseVoucher;
@@ -83,6 +88,7 @@ public class CartControllerTest {
 
     @BeforeAll()
     void registerAndLoginUser() throws Exception {
+
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(registerInfo))
@@ -134,7 +140,7 @@ public class CartControllerTest {
                         .content(content))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cartContents.size()").value(1))
-                .andExpect(jsonPath("$.cartContents[0]").value("00000000-0000-0000-0000-000000000000|1|10.0"))
+                .andExpect(jsonPath("$.cartContents[0]").value("00000000-0000-0000-0000-000000000000|1|10.00"))
                 .andExpect(e -> Assertions.assertEquals(1, this.cartItemRepository.count()))
                 .andExpect(e -> Assertions.assertEquals("00000000-0000-0000-0000-000000000000", this.cartItemRepository
                         .findAll()
@@ -198,7 +204,7 @@ public class CartControllerTest {
                         .content(content))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cartContents.size()").value(2))
-                .andExpect(jsonPath("$.cartContents[0]").value("00000000-0000-0000-0000-000000000000|1|10.0"))
+                .andExpect(jsonPath("$.cartContents[0]").value("00000000-0000-0000-0000-000000000000|1|10.00"))
                 .andExpect(jsonPath("$.cartContents[1]").value("99999999-9999-9999-9999-999999999999|1|10.00"))
                 .andReturn();
     }

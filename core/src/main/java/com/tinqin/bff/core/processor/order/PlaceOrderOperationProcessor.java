@@ -18,7 +18,7 @@ import com.tinqin.bff.persistence.repository.CartItemRepository;
 import com.tinqin.bff.persistence.repository.UserRepository;
 import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInputCartItem;
 import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResultSingleItem;
-import com.tinqin.storage.restexport.StorageItemRestExport;
+import com.tinqin.storage.restexport.StorageRestExport;
 import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
     private final UserRepository userRepository;
-    private final StorageItemRestExport storageClient;
+    private final StorageRestExport storageClient;
     private final CartItemRepository cartItemRepository;
     private final PurchaseVoucherOperation purchaseVoucher;
     private final EmptyCartOperation emptyCart;

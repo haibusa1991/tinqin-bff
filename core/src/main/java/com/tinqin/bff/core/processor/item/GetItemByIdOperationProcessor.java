@@ -7,7 +7,7 @@
 //import com.tinqin.bff.core.exception.StorageItemNotFoundException;
 //import com.tinqin.bff.core.exception.StoreItemNotFoundException;
 //import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferencedIdResult;
-//import com.tinqin.storage.restexport.StorageItemRestExport;
+//import com.tinqin.storage.restexport.StorageRestExport;
 //import com.tinqin.zoostore.restexport.ZooStoreRestExport;
 //import feign.FeignException;
 //import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@
 //@Service
 //@RequiredArgsConstructor
 //public class GetItemByIdOperationProcessor implements GetItemByIdOperation {
-//    private final StorageItemRestExport storageClient;
+//    private final StorageRestExport storageClient;
 //    private final ZooStoreRestExport zooStoreClient;
 //
 //

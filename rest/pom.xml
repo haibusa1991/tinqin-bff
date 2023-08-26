@@ -32,12 +32,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.tinqin.bff</groupId>
-            <artifactId>restexportprocessor</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -45,7 +39,7 @@
         <dependency>
             <groupId>com.tinqin.restexport</groupId>
             <artifactId>restexport</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${rest-export-revision}</version>
         </dependency>
     </dependencies>
 
@@ -55,22 +49,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-<!--                <configuration>-->
-<!--                    <mainClass>com.tinqin.bff.rest.TinqinBffApplication.class</mainClass>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>repackage</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
                 <dependencies>
-<!--                    <dependency>-->
-<!--                        <groupId>com.tinqin.bff</groupId>-->
-<!--                        <artifactId>restexportprocessor</artifactId>-->
-<!--                        <version>${revision}</version>-->
-<!--                    </dependency>-->
                 </dependencies>
             </plugin>
         </plugins>

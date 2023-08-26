@@ -10,7 +10,7 @@ import com.tinqin.bff.persistence.repository.CartItemRepository;
 import com.tinqin.bff.persistence.repository.UserRepository;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferenceIdSingleItem;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferencedIdResult;
-import com.tinqin.storage.restexport.StorageItemRestExport;
+import com.tinqin.storage.restexport.StorageRestExport;
 import com.tinqin.zoostore.api.operations.item.getItemById.GetItemByIdResult;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
 import feign.FeignException;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 class AddCartItemOperationProcessorTest {
 
     @MockBean
-    private StorageItemRestExport storageClient;
+    private StorageRestExport storageClient;
 
     @MockBean
     private ZooStoreRestExport storeClient;

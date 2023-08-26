@@ -8,7 +8,7 @@ import com.tinqin.bff.core.exception.ServiceUnavailableException;
 import com.tinqin.bff.core.exception.TagNotFoundException;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferenceIdSingleItem;
 import com.tinqin.storage.api.operations.storageItem.getStorageItemByReferencedId.GetStorageItemByReferencedIdResult;
-import com.tinqin.storage.restexport.StorageItemRestExport;
+import com.tinqin.storage.restexport.StorageRestExport;
 import com.tinqin.zoostore.api.operations.item.BaseEditItemResult;
 import com.tinqin.zoostore.api.operations.item.getAllItem.GetAllItemOperationProcessorSingleItem;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
@@ -21,7 +21,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class GetItemByTagIdOperationProcessor implements GetItemByTagIdOperation {
-    private final StorageItemRestExport storageClient;
+    private final StorageRestExport storageClient;
     private final ZooStoreRestExport zooStoreClient;
 
     @Override
