@@ -2,22 +2,24 @@ MYSQL_SERVER: "${MYSQL_SERVER_NAME}:${MYSQL_SERVER_PORT}"
 MYSQL_SERVER_NAME: localhost
 MYSQL_SERVER_PORT: 3306
 MYSQL_ROOT_PASSWORD: toor
-MYSQL_DATABASE_NAME: tinqin-bff
 
-STORAGE_CLIENT_NAME: STORAGE_CLIENT_NAME
 
-STORAGE_PORT: STORAGE_PORT
-ZOOSTORE_CLIENT_NAME: ZOOSTORE_CLIENT_NAME
-
-ZOOSTORE_PORT: ZOOSTORE_PORT
+BFF_DB_NAME: tinqin-bff
 BFF_PORT: 8082
+
+STORAGE_CLIENT_NAME: localhost
+STORAGE_PORT: 8081
+
+ZOOSTORE_CLIENT_NAME: localhost
+ZOOSTORE_PORT: 8080
+
 JWT_SECRET: SkzL9DNlghANAvjcxxKtSiwENSPYwbbI
 
 
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MYSQL_SERVER}/${MYSQL_DATABASE_NAME}?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${MYSQL_SERVER}/${BFF_DB_NAME}?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password: ${MYSQL_ROOT_PASSWORD}
   sql:

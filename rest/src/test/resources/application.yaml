@@ -2,7 +2,7 @@ MYSQL_SERVER: ${MYSQL_SERVER_NAME}:${MYSQL_SERVER_PORT}
 MYSQL_SERVER_NAME: localhost
 MYSQL_SERVER_PORT: 3306
 MYSQL_ROOT_PASSWORD: toor
-MYSQL_DATABASE_NAME: tinqin-bff22
+BFF_DB_NAME: test-db
 
 STORAGE_CLIENT_NAME: STORAGE_CLIENT_NAME
 
@@ -16,7 +16,7 @@ JWT_SECRET: SkzL9DNlghANAvjcxxKtSiwENSPYwbbI
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MYSQL_SERVER}/test-db?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${MYSQL_SERVER}/${BFF_DB_NAME}?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password: ${MYSQL_ROOT_PASSWORD}
   sql:

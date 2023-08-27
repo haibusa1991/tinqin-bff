@@ -21,7 +21,8 @@ public enum TokenWhitelist {
 
     POST(new String[]{
             "/auth/login",
-            "/auth/register"
+            "/auth/register",
+            "/items"
     });
 
     public final String[] values;

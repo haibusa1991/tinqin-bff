@@ -195,7 +195,7 @@ class AddCartItemOperationProcessorTest {
         when(cartItemRepository.save(any(CartItem.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
         when(userRepository.save(any(User.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        AddCartItemResult expected = new AddCartItemResult(Set.of("00000000-0000-0000-0000-000000000000|10|10.0"));
+        AddCartItemResult expected = new AddCartItemResult(Set.of("00000000-0000-0000-0000-000000000000|10|10.00"));
         Assertions.assertEquals(expected.getCartContents().toString(), processor.process(input).getCartContents().toString());
     }
 
@@ -217,7 +217,7 @@ class AddCartItemOperationProcessorTest {
         when(cartItemRepository.save(any(CartItem.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
         when(userRepository.save(any(User.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        AddCartItemResult expected = new AddCartItemResult(Set.of("00000000-0000-0000-0000-000000000000|1010|10.0"));
+        AddCartItemResult expected = new AddCartItemResult(Set.of("00000000-0000-0000-0000-000000000000|1010|10.00"));
         Assertions.assertEquals(expected.getCartContents().toString(), processor.process(input).getCartContents().toString());
     }
 }

@@ -127,7 +127,7 @@ public class CartControllerTest {
                 .referencedItemId(UUID.fromString("00000000-0000-0000-0000-000000000000"))
                 .id(UUID.fromString("11111111-1111-1111-1111-111111111111"))
                 .quantity(100)
-                .price(10.0)
+                .price(10.00)
                 .build();
 
         GetStorageItemByReferencedIdResult storage = GetStorageItemByReferencedIdResult.builder().items(List.of(singleItem)).build();

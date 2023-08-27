@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -98,6 +99,6 @@ public class AddCartItemOperationProcessor implements AddCartItemOperation {
     private String serializeCartItem(CartItem cartItem) {
         return String.join("|", cartItem.getReferencedItemId().toString(),
                 cartItem.getQuantity().toString(),
-                cartItem.getPrice().toString());
+                String.format(Locale.ROOT,"%.2f", cartItem.getPrice().doubleValue()).formatted());
     }
 }
