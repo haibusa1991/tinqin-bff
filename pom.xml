@@ -13,7 +13,7 @@
         <revision>0.0.2-SNAPSHOT</revision>
         <zoostore.version>0.0.8-SNAPSHOT</zoostore.version>
         <storage.version>0.0.8-SNAPSHOT</storage.version>
-        <rest-export-revision>0.0.2-SNAPSHOT</rest-export-revision>
+        <payments.version>0.0.1-SNAPSHOT</payments.version>
         <java.version>17</java.version>
     </properties>
     <groupId>com.tinqin.bff</groupId>

@@ -24,5 +24,11 @@
             <artifactId>restexport</artifactId>
             <version>${storage.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.tinqin.payments</groupId>
+            <artifactId>restexport</artifactId>
+            <version>${payments.version}</version>
+        </dependency>
     </dependencies>
 </project>

@@ -2,6 +2,7 @@ package com.tinqin.bff.domain.storageClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.tinqin.payments.restexport.PaymentsRestExport;
 import com.tinqin.storage.restexport.StorageRestExport;
 import com.tinqin.zoostore.restexport.ZooStoreRestExport;
 import feign.Feign;
@@ -28,6 +29,11 @@ public class RestExportClientFactory {
     @Value("${ZOOSTORE_PORT}")
     private String zoostorePort;
 
+    @Value("${PAYMENTS_CLIENT_NAME}")
+    private String paymentsClientName;
+    @Value("${PAYMENTS_PORT}")
+    private String paymentsPort;
+
     @Bean
     public ObjectMapper mapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -51,5 +57,13 @@ public class RestExportClientFactory {
                 .encoder(new JacksonEncoder(context.getBean(ObjectMapper.class)))
                 .decoder(new JacksonDecoder(context.getBean(ObjectMapper.class)))
                 .target(ZooStoreRestExport.class, String.format("http://%s:%s", zoostoreClientName, zoostorePort));
+    }
+
+    @Bean
+    PaymentsRestExport getPaymentsClient() {
+        return Feign.builder()
+                .encoder(new JacksonEncoder(context.getBean(ObjectMapper.class)))
+                .decoder(new JacksonDecoder(context.getBean(ObjectMapper.class)))
+                .target(PaymentsRestExport.class, String.format("http://%s:%s", paymentsClientName, paymentsPort));
     }
 }

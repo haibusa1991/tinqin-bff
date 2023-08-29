@@ -9,6 +9,7 @@ import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResultItemData;
 import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherOperation;
 import com.tinqin.bff.api.operation.voucher.purchase.PurchaseVoucherOperationInput;
 import com.tinqin.bff.core.exception.NoItemsInCartException;
+import com.tinqin.bff.core.exception.PaymentFailedException;
 import com.tinqin.bff.core.exception.ServiceUnavailableException;
 import com.tinqin.bff.core.exception.StoreItemNotFoundException;
 import com.tinqin.bff.core.processor.cart.EmptyCartOperationProcessor;
@@ -16,6 +17,9 @@ import com.tinqin.bff.persistence.entity.CartItem;
 import com.tinqin.bff.persistence.entity.User;
 import com.tinqin.bff.persistence.repository.CartItemRepository;
 import com.tinqin.bff.persistence.repository.UserRepository;
+import com.tinqin.payments.api.operation.payment.payment.PaymentOperationInput;
+import com.tinqin.payments.api.operation.payment.payment.PaymentOperationResult;
+import com.tinqin.payments.restexport.PaymentsRestExport;
 import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderInputCartItem;
 import com.tinqin.storage.api.operations.order.placeOrder.PlaceOrderResultSingleItem;
 import com.tinqin.storage.restexport.StorageRestExport;
@@ -41,6 +45,7 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
     private final CartItemRepository cartItemRepository;
     private final PurchaseVoucherOperation purchaseVoucher;
     private final EmptyCartOperation emptyCart;
+    private final PaymentsRestExport paymentClient;
 
     @Override
     public PlaceOrderResult process(PlaceOrderInput input) {
@@ -52,6 +57,20 @@ public class PlaceOrderOperationProcessor implements PlaceOrderOperation {
 
         if (cart.isEmpty()) {
             throw new NoItemsInCartException();
+        }
+
+        PaymentOperationInput paymentData = PaymentOperationInput.builder()
+                .cardNumber(input.getCardNumber())
+                .expiryMonth(input.getExpiryMonth())
+                .expiryYear(input.getExpiryYear())
+                .cvc(input.getCvc())
+                .cartPrice(cart.stream().map(CartItem::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add).doubleValue())
+                .build();
+
+        PaymentOperationResult paymentOperationResult = paymentClient.makeCharge(paymentData);
+
+        if(!paymentOperationResult.isSuccessful()){
+            throw new PaymentFailedException();
         }
 
         this.purchaseVoucher.process(PurchaseVoucherOperationInput.builder()

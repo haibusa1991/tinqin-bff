@@ -15,15 +15,12 @@ import com.tinqin.bff.api.operation.cart.removeCartItem.RemoveCartItemResult;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderInput;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderOperation;
 import com.tinqin.bff.api.operation.order.placeOrder.PlaceOrderResult;
-import com.tinqin.bff.core.processor.order.PlaceOrderOperationProcessor;
-import com.tinqin.restexport.annotation.RestExport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +41,6 @@ public class CartController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
-    @RestExport
     @ApiResponse(responseCode = "200", description = "Item added successfully.")
     @ApiResponse(responseCode = "400", description = "Invalid field contents.")
     @ApiResponse(responseCode = "403", description = "JWT is invalid.")

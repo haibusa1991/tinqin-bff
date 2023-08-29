@@ -34,6 +34,12 @@ public class GlobalControllerAdvise {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(PaymentFailedException.class)
+    @ResponseBody
+    public ResponseEntity<String> handlePaymentFailedException(PaymentFailedException e) {
+        return new ResponseEntity<>("Error processing payment.", HttpStatus.BAD_REQUEST);
+    }
+
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseBody

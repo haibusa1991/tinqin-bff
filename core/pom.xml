@@ -37,5 +37,11 @@
             <version>0.9.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.tinqin.payments</groupId>
+            <artifactId>restexport</artifactId>
+            <version>${payments.version}</version>
+        </dependency>
+
     </dependencies>
 </project>
