@@ -21,6 +21,15 @@ services:
     depends_on:
       - mysql
 
+  payments:
+    container_name: payments
+    image: payments:latest
+    restart: unless-stopped
+    env_file:
+      - /.env
+    ports:
+      - "${PAYMENTS_PORT}:${PAYMENTS_PORT}"
+
   bff:
     container_name: bff
     image: bff:latest
